@@ -1,7 +1,4 @@
 package com.mfbank.dto;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 import lombok.*;
 
 @Data
@@ -13,7 +10,7 @@ public class Staticdto {
     private String reference;
     private Float msc;
     private Float roe;
-    private Float dE;
+    private Float de;
     private Float ptr;
     private Float dcr;
     private Float dfl;

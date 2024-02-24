@@ -1,7 +1,4 @@
 package com.mfbank.dto;
-
-import com.mfbank.model.Notification;
-import jakarta.persistence.Entity;
 import lombok.*;
 
 import java.util.Date;

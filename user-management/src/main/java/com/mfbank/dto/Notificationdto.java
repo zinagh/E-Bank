@@ -1,10 +1,5 @@
 package com.mfbank.dto;
-
-import com.mfbank.model.User;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToMany;
 import lombok.*;
-
 import java.time.LocalDateTime;
 import java.util.Set;
 
