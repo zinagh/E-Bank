@@ -16,7 +16,6 @@ public class BankAccountMapper implements IBankAccountMapper {
     @Override
     public BankAccountDto bankAccountTobankAccountDto(BankAccount bankAccount){
         BankAccountDto bankAccountDto = new BankAccountDto();
-        bankAccountDto.setReference(bankAccount.getReference());
         bankAccountDto.setTitulaire(bankAccount.getTitulaire());
         bankAccountDto.setAccount_balance(bankAccount.getAccount_balance());
         bankAccountDto.setAccount_type(bankAccount.getAccount_type());
@@ -40,7 +39,6 @@ public class BankAccountMapper implements IBankAccountMapper {
     @Override
      public BankAccount bankAccountDtoTobankAccount(BankAccountDto bankAccountDto){
         BankAccount bankAccount= new  BankAccount();
-        bankAccount.setReference(bankAccountDto.getReference());
         bankAccount.setTitulaire(bankAccountDto.getTitulaire());
         bankAccount.setAccount_balance(bankAccountDto.getAccount_balance());
         bankAccount.setAccount_type(bankAccountDto.getAccount_type());

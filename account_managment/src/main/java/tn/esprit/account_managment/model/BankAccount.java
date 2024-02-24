@@ -17,7 +17,6 @@ import java.util.List;
 public class BankAccount
 {
     @Id
-    private String reference;
     private String titulaire;
     private Double account_balance;
     private Integer account_type;

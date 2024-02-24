@@ -11,7 +11,6 @@ import java.util.Date;
 @NoArgsConstructor
 public class BankAccountDto
 {
-    private String reference;
     private String titulaire;
     private Double account_balance;
     private Integer account_type;
