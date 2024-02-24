@@ -6,7 +6,8 @@ import java.util.List;
 public interface ITransactionBankAccountService 
 {
      List<TransactionBankAccountDto> retrieveAllTransactionBankAccounts();
-     TransactionBankAccount retrieveTransactionBankAccount(String transactionBankAccountId);
+
+     TransactionBankAccountDto retrieveTransactionBankAccount(String transactionBankAccountId);
      TransactionBankAccount addTransactionBankAccount(TransactionBankAccount t);
      void removeTransactionBankAccount(String transactionBankAccountId);
      TransactionBankAccount modifyTransactionBankAccount(TransactionBankAccount transactionBankAccount);

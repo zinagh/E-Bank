@@ -20,19 +20,28 @@ public class UserAsStudentonBAServiceImpl implements IUserAsStudentonBAService
     UserAsStudentonBARepository userAsStudentonBARepository;
     IUserAsStudentonBAMapper iUserAsStudentonBAMapper;
 
+    @Override
     public List<UserAsStudentonBADto> retrieveAllUserAsStudentonBAs() {
         List<UserAsStudentonBA> userAsStudentonBAS =  userAsStudentonBARepository.findAll();
-        List<UserAsStudentonBADto> userAsStudentonBADtos = iUserAsStudentonBAMapper.
+        List<UserAsStudentonBADto> userAsStudentonBADtos = iUserAsStudentonBAMapper.userstodtos(userAsStudentonBAS);
+        return userAsStudentonBADtos;
     }
+
+    @Override
     public UserAsStudentonBA retrieveUserAsStudentonBA(String userAsStudentonBAId) {
         return userAsStudentonBARepository.findById(userAsStudentonBAId).get();
     }
+
+    @Override
     public UserAsStudentonBA addUserAsStudentonBA(UserAsStudentonBA u) {
         return userAsStudentonBARepository.save(u);
     }
+    @Override
     public void removeUserAsStudentonBA(String userAsStudentonBAId) {
         userAsStudentonBARepository.deleteById(userAsStudentonBAId);
     }
+
+    @Override
     public UserAsStudentonBA modifyUserAsStudentonBA(UserAsStudentonBA userAsStudentonBA) {
         return userAsStudentonBARepository.save(userAsStudentonBA);
     }
