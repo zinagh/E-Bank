@@ -2,12 +2,14 @@ package tn.esprit.account_managment.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -31,4 +33,8 @@ public class TransactionBankAccount
 
     @ManyToOne
     private BankAccount source;
+
+
+    @PrePersist
+    public void generateReference() {reference = UUID.randomUUID().toString();}
 }

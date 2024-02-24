@@ -2,24 +2,31 @@ package tn.esprit.account_managment.service;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tn.esprit.account_managment.dto.TransactionBankAccountDto;
 import tn.esprit.account_managment.mapper.IBankAccountMapper;
 import tn.esprit.account_managment.mapper.ITransactionBankAccountMapper;
+import tn.esprit.account_managment.model.BankAccount;
 import tn.esprit.account_managment.model.TransactionBankAccount;
+import tn.esprit.account_managment.repository.BankAccountRepository;
 import tn.esprit.account_managment.repository.TransactionBankAccountRepository;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
-@AllArgsConstructor
-@NoArgsConstructor
-
-
 public class TransactionBankAccountServiceImpl implements ITransactionBankAccountService
 {
-    TransactionBankAccountRepository transactionBankAccountRepository;
-    ITransactionBankAccountMapper iTransactionBankAccountMapper;
+    @Autowired
+    private final TransactionBankAccountRepository transactionBankAccountRepository;
+    @Autowired
+    private final BankAccountRepository bankAccountRepository;
+
+    @Autowired
+    private final ITransactionBankAccountMapper iTransactionBankAccountMapper;
 
     @Override
     public List<TransactionBankAccountDto> retrieveAllTransactionBankAccounts() {
@@ -36,8 +43,23 @@ public class TransactionBankAccountServiceImpl implements ITransactionBankAccoun
     }
 
     @Override
-    public TransactionBankAccount addTransactionBankAccount(TransactionBankAccount t) {
-        return transactionBankAccountRepository.save(t);
+    public void addTransactionBankAccount(TransactionBankAccountDto transactionBankAccountDto,String destinationId, String sourceId) {
+
+        Optional<BankAccount> optionaldestinationAccount = bankAccountRepository.findById(destinationId);
+        Optional<BankAccount> optionalsourceAccount = bankAccountRepository.findById(sourceId);
+        if(optionaldestinationAccount.isPresent() && optionalsourceAccount.isPresent()) {
+            BankAccount destinationAccount = optionaldestinationAccount.get();
+            BankAccount sourceAccount = optionalsourceAccount.get();
+            Date transDate = new Date();
+            TransactionBankAccount transactionBankAccount = iTransactionBankAccountMapper.dtototransaction(transactionBankAccountDto);
+            transactionBankAccount.setValidation(false);
+            transactionBankAccount.setCancelBysender(false);
+            transactionBankAccount.setCancelByreceiver(false);
+            transactionBankAccount.setDate_heure(transDate);
+            transactionBankAccount.setDestination(destinationAccount);
+            transactionBankAccount.setSource(sourceAccount);
+            transactionBankAccountRepository.save(transactionBankAccount);
+        }
     }
 
     @Override
@@ -46,7 +68,8 @@ public class TransactionBankAccountServiceImpl implements ITransactionBankAccoun
     }
 
     @Override
-    public TransactionBankAccount modifyTransactionBankAccount(TransactionBankAccount transactionBankAccount) {
-        return transactionBankAccountRepository.save(transactionBankAccount);
+    public void modifyTransactionBankAccount(TransactionBankAccountDto transactionBankAccountDto) {
+        TransactionBankAccount transactionBankAccount = iTransactionBankAccountMapper.dtototransaction(transactionBankAccountDto);
+        transactionBankAccountRepository.save(transactionBankAccount);
     }
 }

@@ -2,6 +2,7 @@ package tn.esprit.account_managment.service;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tn.esprit.account_managment.dto.UserAsStudentonBADto;
 import tn.esprit.account_managment.mapper.IUserAsStudentonBAMapper;
@@ -12,13 +13,12 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@AllArgsConstructor
-@NoArgsConstructor
-
 public class UserAsStudentonBAServiceImpl implements IUserAsStudentonBAService
 {
-    UserAsStudentonBARepository userAsStudentonBARepository;
-    IUserAsStudentonBAMapper iUserAsStudentonBAMapper;
+    @Autowired
+    private final UserAsStudentonBARepository userAsStudentonBARepository;
+    @Autowired
+    private final IUserAsStudentonBAMapper iUserAsStudentonBAMapper;
 
     @Override
     public List<UserAsStudentonBADto> retrieveAllUserAsStudentonBAs() {
@@ -28,13 +28,16 @@ public class UserAsStudentonBAServiceImpl implements IUserAsStudentonBAService
     }
 
     @Override
-    public UserAsStudentonBA retrieveUserAsStudentonBA(String userAsStudentonBAId) {
-        return userAsStudentonBARepository.findById(userAsStudentonBAId).get();
+    public UserAsStudentonBADto retrieveUserAsStudentonBA(String userAsStudentonBAId) {
+        UserAsStudentonBA userAsStudentonBA = userAsStudentonBARepository.findById(userAsStudentonBAId).get();
+        UserAsStudentonBADto userAsStudentonBADto = iUserAsStudentonBAMapper.usertodto(userAsStudentonBA);
+        return userAsStudentonBADto;
     }
 
     @Override
-    public UserAsStudentonBA addUserAsStudentonBA(UserAsStudentonBA u) {
-        return userAsStudentonBARepository.save(u);
+    public void addUserAsStudentonBA(UserAsStudentonBADto userAsStudentonBADto) {
+        UserAsStudentonBA userAsStudentonBA = iUserAsStudentonBAMapper.dtotouser(userAsStudentonBADto);
+         userAsStudentonBARepository.save(userAsStudentonBA);
     }
     @Override
     public void removeUserAsStudentonBA(String userAsStudentonBAId) {
@@ -42,8 +45,10 @@ public class UserAsStudentonBAServiceImpl implements IUserAsStudentonBAService
     }
 
     @Override
-    public UserAsStudentonBA modifyUserAsStudentonBA(UserAsStudentonBA userAsStudentonBA) {
-        return userAsStudentonBARepository.save(userAsStudentonBA);
+    public void modifyUserAsStudentonBA(UserAsStudentonBADto userAsStudentonBADto) {
+        UserAsStudentonBA userAsStudentonBA = iUserAsStudentonBAMapper.dtotouser(userAsStudentonBADto);
+        userAsStudentonBARepository.save(userAsStudentonBA);
+
     }
 
 }

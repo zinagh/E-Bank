@@ -8,7 +8,7 @@ public interface ITransactionBankAccountService
      List<TransactionBankAccountDto> retrieveAllTransactionBankAccounts();
 
      TransactionBankAccountDto retrieveTransactionBankAccount(String transactionBankAccountId);
-     TransactionBankAccount addTransactionBankAccount(TransactionBankAccount t);
+     void addTransactionBankAccount(TransactionBankAccountDto transactionBankAccountDto, String destinationId,String sourceId);
      void removeTransactionBankAccount(String transactionBankAccountId);
-     TransactionBankAccount modifyTransactionBankAccount(TransactionBankAccount transactionBankAccount);
+     void modifyTransactionBankAccount(TransactionBankAccountDto transactionBankAccountDto);
 }

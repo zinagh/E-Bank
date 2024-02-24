@@ -7,8 +7,8 @@ public interface IUserAsStudentonBAService
 {
 
     List<UserAsStudentonBADto> retrieveAllUserAsStudentonBAs();
-    UserAsStudentonBA retrieveUserAsStudentonBA(String userAsStudentonBAId);
-    UserAsStudentonBA addUserAsStudentonBA(UserAsStudentonBA u);
+    UserAsStudentonBADto retrieveUserAsStudentonBA(String userAsStudentonBAId);
+    void addUserAsStudentonBA(UserAsStudentonBADto userAsStudentonBADto);
     void removeUserAsStudentonBA(String  userAsStudentonBAId);
-    UserAsStudentonBA modifyUserAsStudentonBA(UserAsStudentonBA userAsStudentonBA);
+    void modifyUserAsStudentonBA(UserAsStudentonBADto userAsStudentonBAdto);
 }

@@ -2,6 +2,7 @@ package tn.esprit.account_managment.service;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tn.esprit.account_managment.dto.BankAccountDto;
 import tn.esprit.account_managment.mapper.IBankAccountMapper;
@@ -13,11 +14,11 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@AllArgsConstructor
-@NoArgsConstructor
 public class BankAccountServiceImpl implements  IBankAccountService{
-    BankAccountRepository bankAccountRepository;
-    IBankAccountMapper iBankAccountMapper;
+    @Autowired
+    private final BankAccountRepository bankAccountRepository;
+    @Autowired
+    private final IBankAccountMapper iBankAccountMapper;
 
     @Override
     public List<BankAccountDto> retrieveAllBankAccounts() {
@@ -36,8 +37,8 @@ public class BankAccountServiceImpl implements  IBankAccountService{
     }
 
     @Override
-    public void addBankAccount(BankAccountDto b) {
-        BankAccount bankAccount = iBankAccountMapper.bankAccountDtoTobankAccount(b);
+    public void addBankAccount(BankAccountDto bankAccountDto) {
+        BankAccount bankAccount = iBankAccountMapper.bankAccountDtoTobankAccount(bankAccountDto);
         bankAccountRepository.save(bankAccount);
     }
     @Override
@@ -45,7 +46,8 @@ public class BankAccountServiceImpl implements  IBankAccountService{
         bankAccountRepository.deleteById(bankAccountId);
     }
     @Override
-    public BankAccount modifyBankAccount(BankAccount bankAccount) {
-        return bankAccountRepository.save(bankAccount);
+    public void modifyBankAccount(BankAccountDto bankAccountDto) {
+        BankAccount bankAccount = iBankAccountMapper.bankAccountDtoTobankAccount(bankAccountDto);
+         bankAccountRepository.save(bankAccount);
     }
 }

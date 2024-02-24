@@ -7,7 +7,7 @@ public interface IBankAccountService
 {
     List<BankAccountDto> retrieveAllBankAccounts();
     BankAccountDto retrieveBankAccount(String bankAccountId);
-    void addBankAccount(BankAccountDto b);
+    void addBankAccount(BankAccountDto bankAccountDto);
     void removeBankAccount(String bankAccountId);
-    BankAccount modifyBankAccount(BankAccount bankAccount);
+    void modifyBankAccount(BankAccountDto bankAccountDto);
 }
