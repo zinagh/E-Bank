@@ -1,0 +1,32 @@
+package tn.esprit.card_management.dto;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+import tn.esprit.card_management.model.BankAccountForCard;
+import tn.esprit.card_management.model.TransactionCard;
+import tn.esprit.card_management.model.UserAsEmployee;
+
+import java.util.List;
+
+@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class Carddto {
+    String numeroCard;
+    String dateExpiration;
+    String codeSecurite;
+    String titulaire;
+    String NIP;
+    String CVV;
+    boolean activated;
+    boolean disableCard;
+    float limitSolde;
+    float CommisionBasedOnAccount;
+    float solde;
+    BankAccountForCard cardAccount ;
+    UserAsEmployee cardManager ;
+    List<TransactionCard> transactions ;
+}
