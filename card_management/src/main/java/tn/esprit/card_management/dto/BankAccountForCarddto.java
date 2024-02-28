@@ -13,12 +13,11 @@ import java.util.List;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BankAccountForCarddto {
-
     String reference;
     String titulaire;
     boolean activated;
     double account_balance;
     Integer account_limit;
     float sendamounts;
-    List<Card> cards;
+    List<Carddto> carddtos;
 }

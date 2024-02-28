@@ -16,10 +16,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserAsEmployee {
     @Id
-
     String userName;
-    List<Card> cardsToManage;
-
     @OneToMany(mappedBy = "user")
     private List<Card> cards;
 }

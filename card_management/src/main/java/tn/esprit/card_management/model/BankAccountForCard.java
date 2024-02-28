@@ -18,17 +18,15 @@ import java.util.Set;
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BankAccountForCard {
-@Id
+    @Id
     String reference;
     String titulaire;
     boolean activated;
     double account_balance;
     Integer account_limit;
     float sendamounts;
+    @OneToMany(mappedBy = "bankAccountForcard")
     List<Card> cards;
-
-    @OneToOne
-    private Card card;
 
 
 }

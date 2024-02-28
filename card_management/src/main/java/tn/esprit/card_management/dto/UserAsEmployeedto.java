@@ -13,8 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserAsEmployeedto {
-
     String userName;
-    List<Card> cardsToManage;
+    List<Carddto> carddtos;
 
 }

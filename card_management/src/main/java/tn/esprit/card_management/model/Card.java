@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
+
 @Entity
 @Getter
 @Setter
@@ -15,7 +16,6 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Card {
     @Id
-
     String numeroCard;
     String dateExpiration;
     String codeSecurite;
@@ -27,15 +27,11 @@ public class Card {
     float limitSolde;
     float CommisionBasedOnAccount;
     float solde;
-    BankAccountForCard cardAccount ;
-    UserAsEmployee cardManager ;
-    List<TransactionCard> transactions ;
-
-    @OneToOne(mappedBy = "card")
-     BankAccountForCard bankAccountForcards;
+    @ManyToOne
+     BankAccountForCard bankAccountForcard;
     @ManyToOne
      UserAsEmployee user;
-    @OneToMany(mappedBy = "card")
-    private List<TransactionCard> transactionCards;
 
+    @OneToMany(mappedBy = "card", cascade = CascadeType.ALL)
+    List<TransactionCard> transactions;
 }

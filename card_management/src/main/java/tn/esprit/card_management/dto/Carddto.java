@@ -26,7 +26,7 @@ public class Carddto {
     float limitSolde;
     float CommisionBasedOnAccount;
     float solde;
-    BankAccountForCard cardAccount ;
-    UserAsEmployee cardManager ;
-    List<TransactionCard> transactions ;
+    BankAccountForCarddto bankAccountForCarddto;
+    UserAsEmployeedto userAsEmployeedto;
+    List<TransactionCarddto> transactionsCarddtos;
 }
