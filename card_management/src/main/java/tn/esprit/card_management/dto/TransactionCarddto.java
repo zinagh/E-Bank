@@ -2,6 +2,7 @@ package tn.esprit.card_management.dto;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import tn.esprit.card_management.model.BankAccountForCard;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -14,8 +15,8 @@ import java.time.LocalDateTime;
 
 public class TransactionCarddto {
     String reference;
-    BankAccountForCarddto destinationdto;
-    BankAccountForCarddto sourcedto;
+    BankAccountForCard destinationdto;
+    BankAccountForCard sourcedto;
     BigDecimal montant;
     LocalDateTime date_heure;
     String type ;

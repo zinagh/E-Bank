@@ -18,7 +18,7 @@ public class UserAsEmployeemapper implements IUserAsEmployeemapper {
 @Override
     public UserAsEmployee fromdtoToentity(UserAsEmployeedto userAsEmployeedto){
     UserAsEmployee userAsEmployee= new UserAsEmployee();
-    UserAsEmployee.setUserName(userAsEmployeedto.getUserName());
+        userAsEmployee.setUserName(userAsEmployeedto.getUserName());
     return userAsEmployee;
 }
     @Override

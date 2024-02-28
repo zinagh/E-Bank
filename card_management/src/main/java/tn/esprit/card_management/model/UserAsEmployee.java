@@ -16,6 +16,8 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserAsEmployee {
     @Id
+            @GeneratedValue(strategy =GenerationType.IDENTITY)
+            Integer id;
     String userName;
     @OneToMany(mappedBy = "user")
     private List<Card> cards;

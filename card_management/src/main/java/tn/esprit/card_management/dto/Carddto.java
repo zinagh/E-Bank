@@ -6,6 +6,7 @@ import tn.esprit.card_management.model.BankAccountForCard;
 import tn.esprit.card_management.model.TransactionCard;
 import tn.esprit.card_management.model.UserAsEmployee;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -16,7 +17,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Carddto {
     String numeroCard;
-    String dateExpiration;
+    LocalDateTime dateExpiration;
     String codeSecurite;
     String titulaire;
     String NIP;

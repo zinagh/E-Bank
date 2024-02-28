@@ -30,8 +30,8 @@ public class TransactionCardmapper implements ITransactionCardmapper {
     public TransactionCard fromdtoToentity(TransactionCarddto transactionCarddto) {
         TransactionCard transactionCard = new TransactionCard();
         transactionCard.setReference(transactionCarddto.getReference());
-       /*transactionCard.setDestinationdto(transactionCard.getDestination());
-        transactionCard.setSourcedto(transactionCard.getSource());*/
+       transactionCard.setDestination(transactionCarddto.getDestinationdto());
+        transactionCard.setSource(transactionCarddto.getSourcedto());
         transactionCard.setMontant(transactionCarddto.getMontant());
         transactionCard.setDate_heure(transactionCarddto.getDate_heure());
         transactionCard.setType(transactionCarddto.getType());

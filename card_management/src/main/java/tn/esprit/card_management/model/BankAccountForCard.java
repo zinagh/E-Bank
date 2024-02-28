@@ -1,9 +1,6 @@
 package tn.esprit.card_management.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -19,6 +16,7 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BankAccountForCard {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     String reference;
     String titulaire;
     boolean activated;
