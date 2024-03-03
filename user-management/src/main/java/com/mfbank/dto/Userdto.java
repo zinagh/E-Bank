@@ -11,6 +11,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class Userdto {
     private String userName;
+    private String password;
     private String nom;
     private String prenom;
     private String email;
