@@ -18,7 +18,8 @@ a {
     text-decoration: none !important; }
 
 .content {
-  padding: 7rem 0; }
+  padding: 7rem 0; 
+}
 
 h2 {
   font-size: 20px; }
@@ -103,11 +104,11 @@ h2 {
   background: #ccc; }
 
 .control input:checked ~ .control__indicator {
-  background: #fb771a; }
+  background: #dc3545; }
 
 .control:hover input:not([disabled]):checked ~ .control__indicator,
 .control input:checked:focus ~ .control__indicator {
-  background: #fb8633; }
+  background: #dc3545; }
 
 .control input:disabled ~ .control__indicator {
   background: #e6e6e6;

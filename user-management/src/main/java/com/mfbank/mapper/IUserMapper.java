@@ -10,6 +10,6 @@ public interface IUserMapper {
     User userdtoTouser (Userdto userdto);
 
     List<Userdto> usersTouserdtos (List<User> users);
-    List<User> userdtosTousers(List<Userdto> userdtos);
+
 
 }

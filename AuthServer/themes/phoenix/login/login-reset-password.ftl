@@ -54,7 +54,7 @@
         }
 
         input[type="submit"] {
-            background-color: orange;
+            background-color: red;
             color: white;
             padding: 10px 20px;
             border: none;
@@ -62,7 +62,7 @@
         }
 
         input[type="submit"]:hover {
-            background-color: darkorange;
+            background-color: darkred;
         }
 
         .button {

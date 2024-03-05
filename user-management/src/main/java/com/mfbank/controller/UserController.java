@@ -2,6 +2,7 @@ package com.mfbank.controller;
 import com.mfbank.configuration.KeycloakSecurity;
 import com.mfbank.dto.Userdto;
 import com.mfbank.mapper.Imapper;
+import com.mfbank.model.Static;
 import com.mfbank.model.User;
 import com.mfbank.service.IUserService;
 import jakarta.ws.rs.core.Response;
@@ -41,6 +42,24 @@ public class UserController {
         return Response.ok().build();
     }
 
+    @PutMapping("/modify-user")
+    public Response modifyUser(@RequestBody Userdto u) {
+        Keycloak keycloak=keycloakSecurity.getKeycloakInstance();
+       List<UserRepresentation>  userRepresentations=keycloak.realm(realm).users().search(u.getUserName());
+        UserRepresentation userToUpdate= imapper.mapuserRepToUpdate(u);
+        String id=userRepresentations.get(0).getId();
+        keycloak.realm(realm).users().get(id).update(userToUpdate);
+        User user = userService.modifyUser(u);
+        return Response.ok(u).build();
+    }
+    @PutMapping("/updatepass")
+    public Response updatepassword(@RequestParam String username,
+                                   @RequestParam String newpass ,
+                                   @RequestParam String veripass) {
+        String message= userService.updatepassword(username,newpass,veripass);
+        return Response.ok(message).build();
+    }
+
   /*  @GetMapping("/retrieve-allKeycloak-users")
     public List<UserRepresentation> retrieveAllKeycloakUsers() {
         Keycloak keycloak =keycloakSecurity.getKeycloakInstance();
@@ -67,10 +86,6 @@ public class UserController {
         userService.removeUser(userName);
     }
 
-    @PutMapping("/modify-user")
-    public User modifyUser(@RequestBody Userdto u) {
-        User user = userService.modifyUser(u);
-        return user;
-    }
+
 
 }

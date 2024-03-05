@@ -4,7 +4,7 @@
 <!doctype html>
 <html lang="en">
   <head>
-      <title>PhoenixStock Keeper</title>
+      <title>MF Bank </title>
     <link rel="icon" type="image/png" href="${url.resourcesPath}/phoenix.png">
     <link rel="stylesheet" type="text/css" href="${url.resourcesPath}/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="${url.resourcesPath}/css/style.css">
@@ -27,8 +27,8 @@
         <div class="container">
           <div class="row align-items-center justify-content-center">
             <div class="col-md-7">
-            <h3>Login to <strong>PhoenixStock Keeper</strong></h3>
-            <p class="mb-4">Empower Your Business, Master Your Inventory.</p>
+            <h3>Login to <strong>MF-BANK</strong></h3>
+            <p class="mb-4">Small Investments , Big Impacts </p>
               <form action="${url.loginAction}" method="post">
                 <div class="form-group first">
                   <label for="username">Username</label>

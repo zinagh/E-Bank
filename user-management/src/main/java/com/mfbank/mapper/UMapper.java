@@ -1,7 +1,6 @@
 package com.mfbank.mapper;
 
 import com.mfbank.configuration.KeycloakSecurity;
-import com.mfbank.dto.Role;
 import com.mfbank.dto.Userdto;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.idm.CredentialRepresentation;
@@ -39,6 +38,21 @@ public class UMapper implements Imapper{
         return  userRepresentation;
     }
 
+    @Override
+    public UserRepresentation mapuserRepToUpdate (Userdto userdto) {
+        UserRepresentation userRepresentation= new UserRepresentation();
+        userRepresentation.setUsername(userdto.getUserName());
+        userRepresentation.setEmail(userdto.getEmail());
+        userRepresentation.setFirstName(userdto.getPrenom());
+        userRepresentation.setLastName(userdto.getNom());
+        userRepresentation.setEnabled(true);
+        List<String> realms = new ArrayList<>();
+        realms.add(userdto.getRole().toString());
+        System.out.println("realms are :" + realms.stream().toList());
+        userRepresentation.setRealmRoles(realms.stream().toList());
+        System.out.println("Role are :" + userRepresentation.getRealmRoles().stream().toList());
+        return  userRepresentation;
+    }
     @Override
     public void assignerole(String role , String id){
         Keycloak keycloak= keycloakSecurity.getKeycloakInstance();

@@ -42,7 +42,7 @@ public class Usermapper implements IUserMapper {
                 .map(this::userTouserdto)
                 .collect(Collectors.toList());
     }
-    @Override
+
     public   List<User> userdtosTousers(List<Userdto> userdtos){
     return userdtos.stream()
             .map(this::userdtoTouser)

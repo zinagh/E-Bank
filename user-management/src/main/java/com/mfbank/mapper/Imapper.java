@@ -8,4 +8,7 @@ public interface Imapper {
     UserRepresentation mapuserRep (Userdto userdto);
     void assignerole(String role , String id);
 
+    UserRepresentation mapuserRepToUpdate(Userdto userdto);
+
+
 }
