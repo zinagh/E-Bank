@@ -1,10 +1,12 @@
 package com.mfbank.service;
 import com.mfbank.configuration.KeycloakSecurity;
 import com.mfbank.dto.Userdto;
+import com.mfbank.mapper.Imapper;
 import com.mfbank.mapper.Usermapper;
 import com.mfbank.model.Notification;
 import com.mfbank.model.User;
 import com.mfbank.repository.UserRepository;
+import jakarta.ws.rs.core.Response;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.admin.client.Keycloak;
@@ -20,6 +22,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImp  implements IUserService{
+    @Autowired
+    Imapper imapper;
     @Autowired
     UserRepository userRepository;
     @Autowired
@@ -39,16 +43,36 @@ public class UserServiceImp  implements IUserService{
         return userdto;
     }
     public void addUser(Userdto userdto ) {
-        User user= usermapper.userdtoTouser(userdto) ;
-        userRepository.save(user);
+        UserRepresentation userRepresentation = imapper.mapuserRep(userdto);
+        System.out.println(userRepresentation);
+        Keycloak keycloak =keycloakSecurity.getKeycloakInstance();
+        Response response = keycloak.realm(realm).users().create(userRepresentation);
+        if(response.getStatus() == 201) {
+            String userId = keycloak.realm(realm).users()
+                    .search(userRepresentation
+                    .getUsername()).get(0).getId();
+            imapper.assignerole(userdto.getRole().toString() ,userId);
+            User user= usermapper.userdtoTouser(userdto) ;
+            userRepository.save(user);
+        }
     }
     public void removeUser(String userName) {
+        Keycloak keycloak = keycloakSecurity.getKeycloakInstance();
+        List<UserRepresentation> userRepresentations = keycloak.realm(realm).users().search(userName);
+        String id = userRepresentations.get(0).getId();
+        keycloak.realm(realm).users().delete(id);
         userRepository.deleteById(userName);
     }
     public User modifyUser(Userdto userdto) {
+        Keycloak keycloak=keycloakSecurity.getKeycloakInstance();
+        List<UserRepresentation>  userRepresentations=keycloak
+                .realm(realm).users()
+                .search(userdto.getUserName());
+        UserRepresentation userToUpdate= imapper.mapuserRepToUpdate(userdto);
+        String id=userRepresentations.get(0).getId();
+        keycloak.realm(realm).users().get(id).update(userToUpdate);
         User user = usermapper.userdtoTouser(userdto);
-
-         userRepository.save(user);
+        userRepository.save(user);
         return user;
     }
     public String updatepassword(String username ,String newpass ,String verifpass){
@@ -67,4 +91,6 @@ public class UserServiceImp  implements IUserService{
 return "password is updated";
         } return "comparaison failed";
     }
+
+
 }

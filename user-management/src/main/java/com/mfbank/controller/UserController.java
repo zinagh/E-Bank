@@ -29,26 +29,12 @@ public class UserController {
 
     @PostMapping("/add-user")
     public Response addUser(@RequestBody Userdto u) {
-        UserRepresentation userRepresentation = imapper.mapuserRep(u);
-        System.out.println(userRepresentation);
-        Keycloak keycloak =keycloakSecurity.getKeycloakInstance();
-        Response response = keycloak.realm(realm).users().create(userRepresentation);
-        if(response.getStatus() == 201) {
-            String userId = keycloak.realm(realm).users().search(userRepresentation
-                    .getUsername()).get(0).getId();
-            imapper.assignerole(u.getRole().toString() ,userId);
-            userService.addUser(u);
-        }
+        userService.addUser(u);
         return Response.ok().build();
     }
 
     @PutMapping("/modify-user")
     public Response modifyUser(@RequestBody Userdto u) {
-        Keycloak keycloak=keycloakSecurity.getKeycloakInstance();
-       List<UserRepresentation>  userRepresentations=keycloak.realm(realm).users().search(u.getUserName());
-        UserRepresentation userToUpdate= imapper.mapuserRepToUpdate(u);
-        String id=userRepresentations.get(0).getId();
-        keycloak.realm(realm).users().get(id).update(userToUpdate);
         User user = userService.modifyUser(u);
         return Response.ok(u).build();
     }
@@ -60,12 +46,6 @@ public class UserController {
         return Response.ok(message).build();
     }
 
-  /*  @GetMapping("/retrieve-allKeycloak-users")
-    public List<UserRepresentation> retrieveAllKeycloakUsers() {
-        Keycloak keycloak =keycloakSecurity.getKeycloakInstance();
-        List<UserRepresentation> users = keycloak.realm(realm).users().list();
-        return users;
-    } */
 
 
     @GetMapping("/retrieve-all-users")
@@ -83,6 +63,7 @@ public class UserController {
 
     @DeleteMapping("/remove-user/{userName}")
     public void removeUser(@PathVariable("userName") String userName) {
+
         userService.removeUser(userName);
     }
 
