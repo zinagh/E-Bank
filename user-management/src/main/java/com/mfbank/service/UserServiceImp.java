@@ -3,11 +3,9 @@ import com.mfbank.configuration.KeycloakSecurity;
 import com.mfbank.dto.Userdto;
 import com.mfbank.mapper.Imapper;
 import com.mfbank.mapper.Usermapper;
-import com.mfbank.model.Notification;
 import com.mfbank.model.User;
 import com.mfbank.repository.UserRepository;
 import jakarta.ws.rs.core.Response;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.idm.CredentialRepresentation;
@@ -68,8 +66,8 @@ public class UserServiceImp  implements IUserService{
         List<UserRepresentation>  userRepresentations=keycloak
                 .realm(realm).users()
                 .search(userdto.getUserName());
-        UserRepresentation userToUpdate= imapper.mapuserRepToUpdate(userdto);
         String id=userRepresentations.get(0).getId();
+        UserRepresentation userToUpdate= imapper.mapuserRepToUpdate(userdto);
         keycloak.realm(realm).users().get(id).update(userToUpdate);
         User user = usermapper.userdtoTouser(userdto);
         userRepository.save(user);
@@ -91,6 +89,4 @@ public class UserServiceImp  implements IUserService{
 return "password is updated";
         } return "comparaison failed";
     }
-
-
 }
