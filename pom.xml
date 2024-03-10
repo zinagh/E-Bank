@@ -17,7 +17,8 @@
 	<modules>
 		<module>user-management</module>
 		<module>discovery-server</module>
-	</modules>
+        <module>api-gateway</module>
+    </modules>
 
 	<properties>
 		<java.version>21</java.version>
