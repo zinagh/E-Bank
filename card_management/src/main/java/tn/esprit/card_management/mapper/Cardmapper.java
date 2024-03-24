@@ -20,7 +20,7 @@ public class Cardmapper implements ICardmapper {
         carddto.setCVV(card.getCVV());
         carddto.setActivated(card.isActivated());
         carddto.setDisableCard(card.isDisableCard());
-        carddto.setLimitSolde(card.getLimitSolde());
+
         carddto.setCommisionBasedOnAccount(card.getCommisionBasedOnAccount());
     return carddto;
     }
@@ -35,7 +35,6 @@ public class Cardmapper implements ICardmapper {
         card.setCVV(carddto.getCVV());
         card.setActivated(carddto.isActivated());
         card.setDisableCard(carddto.isDisableCard());
-        card.setLimitSolde(carddto.getLimitSolde());
         card.setCommisionBasedOnAccount(carddto.getCommisionBasedOnAccount());
         return card;
 

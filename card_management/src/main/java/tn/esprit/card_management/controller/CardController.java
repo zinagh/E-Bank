@@ -51,5 +51,4 @@ public class CardController {
         Card card = iCardService.modifyCard(c);
         return card;
 }
-
 }

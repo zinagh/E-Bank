@@ -4,8 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -14,15 +13,14 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserAsEmployee {
+public class Notification {
     @Id
-            @GeneratedValue(strategy =GenerationType.IDENTITY)
-            Integer id;
-    String userName;
-    @OneToMany(mappedBy = "user")
-    private List<Card> cards;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    int Id;
+    String Description;
+    LocalDateTime Date;
+    @ManyToOne
+    @JoinColumn(name = "numeroCard")
+    private Card card;
+
 }
-
-
-
-

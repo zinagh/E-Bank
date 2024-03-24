@@ -1,10 +1,10 @@
 package tn.esprit.card_management.dto;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import tn.esprit.card_management.model.BankAccountForCard;
-import tn.esprit.card_management.model.TransactionCard;
-import tn.esprit.card_management.model.UserAsEmployee;
+import tn.esprit.card_management.model.NomCardType;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,10 +24,10 @@ public class Carddto {
     String CVV;
     boolean activated;
     boolean disableCard;
-    float limitSolde;
     float CommisionBasedOnAccount;
+    float plafond;
     float solde;
-    BankAccountForCarddto bankAccountForCarddto;
-    UserAsEmployeedto userAsEmployeedto;
-    List<TransactionCarddto> transactionsCarddtos;
+    @Enumerated(EnumType.STRING)
+    NomCardType typeC;
+
 }

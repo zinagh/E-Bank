@@ -5,7 +5,10 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @Entity
@@ -26,14 +29,18 @@ public class Card {
     String CVV;
     boolean activated;
     boolean disableCard;
-    float limitSolde;
     float CommisionBasedOnAccount;
     float solde;
-    @ManyToOne
-     BankAccountForCard bankAccountForcard;
-    @ManyToOne
-     UserAsEmployee user;
-
-    @OneToMany(mappedBy = "card", cascade = CascadeType.ALL)
-    List<TransactionCard> transactions;
+    float plafond;
+    @Enumerated(EnumType.STRING)
+    NomCardType typeC;
+    @ManyToMany
+    @JoinTable(
+            name = "carte_atm",
+            joinColumns = @JoinColumn(name = "numeroCard"),
+            inverseJoinColumns = @JoinColumn(name = "id")
+    )
+    Set<Atm> atms = new HashSet<>();
+    @OneToMany(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> notifications = new ArrayList<>();
 }
