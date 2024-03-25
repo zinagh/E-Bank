@@ -4,6 +4,10 @@ import com.mfbank.dto.Userdto;
 import com.mfbank.mapper.Imapper;
 import com.mfbank.mapper.Usermapper;
 import com.mfbank.model.User;
+import com.mfbank.otherDtos.BankAccountDto;
+import com.mfbank.otherDtos.CreditDto;
+import com.mfbank.otherDtos.InternationalTransferDto;
+import com.mfbank.otherDtos.RepaymentPlanDto;
 import com.mfbank.repository.UserRepository;
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
@@ -14,9 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.*;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImp  implements IUserService{
@@ -89,4 +94,95 @@ public class UserServiceImp  implements IUserService{
 return "password is updated";
         } return "comparaison failed";
     }
+    public  Double getAdditionalDebtForecast(RepaymentPlanDto plan) {
+        Double projectedTotalDebt = plan.getStartingBalance() - plan.getRepaymentOfCcapital();
+        return (projectedTotalDebt - plan.getStartingBalance()) / plan.getStartingBalance();
+    }
+    public  Integer getDaysToPayoffByPrincipal(RepaymentPlanDto plan) {
+        Double remainingBalance = plan.getStartingBalance();
+        int days = 0;
+        LocalDate currentDate = LocalDate.now(); // Get current date
+
+        // Calculate remaining days in the current month (if starting date isn't the 1st)
+        int daysInCurrentMonth = currentDate.lengthOfMonth() - currentDate.getDayOfMonth() + 1;
+
+        while (remainingBalance >= 0) {
+            remainingBalance -= plan.getRepaymentOfCcapital();
+
+            // Use daysInCurrentMonth for the first iteration
+            int daysInMonth = daysInCurrentMonth;
+            if (daysInCurrentMonth == 0) { // After first iteration, use periodToNextMonth
+                Period periodToNextMonth = Period.between(currentDate, currentDate.withDayOfMonth(1).plusMonths(1));
+                daysInMonth = periodToNextMonth.getDays();
+            }
+
+            days += daysInMonth;
+            currentDate = currentDate.plusDays(daysInMonth);
+            daysInCurrentMonth = 0; // Reset for subsequent iterations
+        }
+
+        return days;
+    }
+
+    public  Double getAverageDailyInterestAccrual(CreditDto credit) {
+        // Handle null CreditDto gracefully (optional)
+        if (credit == null) {
+            throw new IllegalArgumentException("CreditDto cannot be null");
+        }
+
+        // Ensure RepaymentPlanDto exists (optional)
+        RepaymentPlanDto repaymentPlan = credit.getRepaymentPlan();
+        if (repaymentPlan == null) {
+            throw new IllegalStateException("CreditDto must have a RepaymentPlanDto");
+        }
+
+        // Calculate daily interest rate (assuming 365 days, adjust if needed)
+        Double dailyInterestRate = credit.getCreditRate() / 365.0; // Use BigDecimal for higher precision (consider)
+
+        // Calculate and return average daily interest accrual
+        Double startingBalance = repaymentPlan.getStartingBalance();
+        return dailyInterestRate * startingBalance;
+    }
+
+
+    public Double getProjectedOutstandingBalance(RepaymentPlanDto plan, int periods) {
+
+            Double remainingBalance = plan.getStartingBalance();
+
+            // Apply interest first in each period, then subtract repayment
+            for (int i = 0; i < periods; i++) {
+                System.out.println("Iteration " + i + ":"); // Added for debugging
+                System.out.println("  - Interest: " + plan.getInterest()); // Added for debugging
+                System.out.println("  - Repayment: " + plan.getRepaymentOfCcapital()); // Added for debugging
+                remainingBalance += plan.getInterest(); // Apply interest first
+                remainingBalance -= plan.getRepaymentOfCcapital();
+                System.out.println("  - Remaining Balance: " + remainingBalance); // Added for debugging
+            }
+
+            return remainingBalance;
+        }
+
+    public  Double getCoverageRatioByPlannedRepayments(RepaymentPlanDto plan) {
+        Double totalRepayment = plan.getStartingBalanceimbursementAount() ;
+        Double totalInterest = plan.getInterest() ;
+        return totalRepayment / totalInterest ;
+    }
+
+
+ public  Double getAccountActivityRatio(BankAccountDto account, Date startDate, Date endDate) {
+     List<InternationalTransferDto> transfers = account.getInternationalTransfers();
+     int transferCount = 0;
+     for (InternationalTransferDto transfer : transfers) {
+         if (transfer.getDate().after(startDate) && transfer.getDate().before(endDate)) {
+             transferCount++;
+         }
+     }
+     Long days = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
+     return (double) transferCount / days; // Adjust for desired period (months/years)
+
+
+ }
+
+
+
 }

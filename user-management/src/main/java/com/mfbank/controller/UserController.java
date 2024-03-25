@@ -4,6 +4,9 @@ import com.mfbank.dto.Userdto;
 import com.mfbank.mapper.Imapper;
 import com.mfbank.model.Static;
 import com.mfbank.model.User;
+import com.mfbank.otherDtos.BankAccountDto;
+import com.mfbank.otherDtos.CreditDto;
+import com.mfbank.otherDtos.RepaymentPlanDto;
 import com.mfbank.service.IUserService;
 import jakarta.ws.rs.core.Response;
 import lombok.AllArgsConstructor;
@@ -14,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -68,5 +72,35 @@ public class UserController {
     }
 
 
+    @GetMapping("/getAdditionalDebtForecast")
+    public Double getAdditionalDebtForecast(@RequestBody RepaymentPlanDto plan) {
+       return userService.getAdditionalDebtForecast(plan);
 
+    }
+    @GetMapping("/getAdditionalDebtForecast")
+    public Integer getDaysToPayoffByPrincipal(@RequestBody RepaymentPlanDto plan) {
+        return userService.getDaysToPayoffByPrincipal(plan);
+
+    }
+    @GetMapping("/getAverageDailyInterestAccrual")
+    public Double getAverageDailyInterestAccrual(@RequestBody CreditDto credit) {
+        return userService.getAverageDailyInterestAccrual(credit);
+
+    }
+    @GetMapping("/getProjectedOutstandingBalance")
+    public Double getProjectedOutstandingBalance(@RequestBody RepaymentPlanDto plan ,
+                                                 @RequestParam int periods) {
+        return userService.getProjectedOutstandingBalance(plan ,periods);
+
+    }
+    @GetMapping("/getCoverageRatioByPlannedRepayments")
+    public Double getCoverageRatioByPlannedRepayments(@RequestBody RepaymentPlanDto plan) {
+        return userService.getCoverageRatioByPlannedRepayments(plan);
+
+    }
+
+    @GetMapping("/getAccountActivityRatio")
+    public  Double getAccountActivityRatio(@RequestBody BankAccountDto account ,@RequestParam Date startDate, @RequestParam Date endDate){
+        return userService.getAccountActivityRatio(account ,startDate , endDate);
+    }
 }
