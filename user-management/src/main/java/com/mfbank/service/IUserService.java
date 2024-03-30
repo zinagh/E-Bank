@@ -17,12 +17,19 @@ public interface IUserService {
     void removeUser(String userName);
     User modifyUser(Userdto userdto);
     String updatepassword(String username, String newwpass ,String verifpass);
+
+
     Double getAdditionalDebtForecast(RepaymentPlanDto plan);
     Integer getDaysToPayoffByPrincipal(RepaymentPlanDto plan);
     Double getAverageDailyInterestAccrual(CreditDto credit);
     Double getProjectedOutstandingBalance(RepaymentPlanDto plan, int periods);
     Double getCoverageRatioByPlannedRepayments(RepaymentPlanDto plan);
-    Double getAccountActivityRatio(BankAccountDto account, Date startDate, Date endDate);
 
+
+    Double getAccountActivityRatio(BankAccountDto account, Date startDate, Date endDate);
+    Double getFeeIncomePerAccount(BankAccountDto account);
+    Double getAccountUtilizationRatio(BankAccountDto account);
+    Double getPercentageOutgoingTransfers(BankAccountDto account);
+    Double getAverageInternationalTransferFee(List<InternationalTransferDto> transfers);
 
 }

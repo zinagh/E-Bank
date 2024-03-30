@@ -168,20 +168,78 @@ return "password is updated";
         return totalRepayment / totalInterest ;
     }
 
+    public  Double getAccountActivityRatio(BankAccountDto account, Date startDate, Date endDate) {
+        List<InternationalTransferDto> transfers = account.getInternationalTransfers();
+        int transferCount = 0;
+        for (InternationalTransferDto transfer : transfers) {
+            if (transfer.getDate().equals(startDate) || transfer.getDate().equals(endDate) ||
+                    transfer.getDate().compareTo(startDate) > 0 && transfer.getDate().compareTo(endDate) < 0) {
+                transferCount++;
+            System.out.println("Transfer date within period: " + transfer.getDate()); // Add print statement
+            }
+        }
 
- public  Double getAccountActivityRatio(BankAccountDto account, Date startDate, Date endDate) {
-     List<InternationalTransferDto> transfers = account.getInternationalTransfers();
-     int transferCount = 0;
-     for (InternationalTransferDto transfer : transfers) {
-         if (transfer.getDate().after(startDate) && transfer.getDate().before(endDate)) {
-             transferCount++;
-         }
-     }
-     Long days = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
-     return (double) transferCount / days; // Adjust for desired period (months/years)
+
+        // Calculate days in the period (ensure non-negative value)
+        double days = Math.max((endDate.getTime() - startDate.getTime()) / (1000.0 * 60 * 60 * 24), 1.0);
+
+        return (double) transferCount / days;
+    }
 
 
- }
+
+    public  Double getFeeIncomePerAccount(BankAccountDto account) {
+        Double totalFees = 0.0;
+        if (account.getDefaultFees() != null) {
+            totalFees += account.getDefaultFees().getAmountPercent(); // Assuming amountPercent represents income
+        }
+        for (InternationalTransferDto transfer : account.getInternationalTransfers()) {
+            if (transfer.getInternationnalFees() != null) {
+                totalFees += transfer.getInternationnalFees().getAmountPercent(); // Assuming amountPercent represents income
+            }
+        }
+        return totalFees;
+    }
+
+
+    public  Double getAccountUtilizationRatio(BankAccountDto account) {
+        if (!account.getNegativeSoldeAllowed()) {
+            return 0.0; // No negative balance allowed, utilization is 0
+        }
+
+        Double availableBalance = account.getAccount_balance() + account.getNegativeSoldeAmount();
+        return account.getAccount_balance() / availableBalance;
+    }
+    public  Double getPercentageOutgoingTransfers(BankAccountDto account) {
+        int totalTransfers = account.getInternationalTransfers().size();
+        int outgoingTransfers = 0;
+
+        for (InternationalTransferDto transfer : account.getInternationalTransfers()) {
+            if (!transfer.isSendOrReceive()) { // Assuming sendOrReceive = false indicates outgoing
+                outgoingTransfers++;
+            }
+        }
+
+        // Handle potential division by zero
+        if (totalTransfers == 0) {
+            return 0.0; // Or another appropriate value for no transfers
+        }
+
+        return (double) outgoingTransfers / totalTransfers * 100;
+    }
+    public  Double getAverageInternationalTransferFee(List<InternationalTransferDto> transfers) {
+        Double totalFees = 0.0;
+        for (InternationalTransferDto transfer : transfers) {
+            totalFees += transfer.getFees();
+        }
+
+        // Handle potential division by zero
+        if (transfers.isEmpty()) {
+            return 0.0; // Or another appropriate value for no transfers
+        }
+
+        return totalFees / transfers.size();
+    }
 
 
 

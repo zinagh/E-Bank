@@ -6,6 +6,7 @@ import com.mfbank.model.Static;
 import com.mfbank.model.User;
 import com.mfbank.otherDtos.BankAccountDto;
 import com.mfbank.otherDtos.CreditDto;
+import com.mfbank.otherDtos.InternationalTransferDto;
 import com.mfbank.otherDtos.RepaymentPlanDto;
 import com.mfbank.service.IUserService;
 import jakarta.ws.rs.core.Response;
@@ -99,8 +100,39 @@ public class UserController {
 
     }
 
+
+
+
     @GetMapping("/getAccountActivityRatio")
     public  Double getAccountActivityRatio(@RequestBody BankAccountDto account ,@RequestParam Date startDate, @RequestParam Date endDate){
         return userService.getAccountActivityRatio(account ,startDate , endDate);
+    }
+
+
+
+    @GetMapping("/getFeeIncomePerAccount")
+    public Double getFeeIncomePerAccount(@RequestBody BankAccountDto account) {
+        return userService.getFeeIncomePerAccount(account);
+
+    }
+
+
+    @GetMapping("/getAccountUtilizationRatio")
+    public Double getAccountUtilizationRatio(@RequestBody BankAccountDto account) {
+        return userService.getAccountUtilizationRatio(account);
+
+    }
+
+    @GetMapping("/getPercentageOutgoingTransfers")
+    public Double getPercentageOutgoingTransfers(@RequestBody BankAccountDto account) {
+        return userService.getPercentageOutgoingTransfers(account);
+
+    }
+
+    // Double getAverageInternationalTransferFee(List<InternationalTransferDto> transfers)
+    @GetMapping("/getAverageInternationalTransferFee")
+    public Double getAverageInternationalTransferFee(@RequestBody List<InternationalTransferDto> transfers) {
+        return userService.getAverageInternationalTransferFee(transfers);
+
     }
 }
