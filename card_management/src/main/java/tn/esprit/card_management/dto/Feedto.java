@@ -1,6 +1,8 @@
 package tn.esprit.card_management.dto;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import tn.esprit.card_management.model.FeeType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +13,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Atmdto {
-    Long Id;
-    String Location;
-    float Somme;
-    boolean Statut;}
+public class Feedto {
+    private Long id;
+    private String name;
+    private String description;
+    private double amount;
+    private FeeType type;
+}

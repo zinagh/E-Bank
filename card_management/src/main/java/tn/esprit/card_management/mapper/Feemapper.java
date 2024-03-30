@@ -1,40 +1,43 @@
 package tn.esprit.card_management.mapper;
 
-
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tn.esprit.card_management.dto.Carddto;
-import tn.esprit.card_management.model.Card;
+import tn.esprit.card_management.dto.Atmdto;
+import tn.esprit.card_management.dto.Feedto;
+import tn.esprit.card_management.model.Atm;
+import tn.esprit.card_management.model.Fee;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class Cardmapper implements ICardmapper {
-
+public class Feemapper implements IFeemapper{
     @Autowired
     private final ModelMapper modelMapper;
 
     @Override
-    public Card dtoToEntity(Carddto cardDto) {
-        return modelMapper.map(cardDto, Card.class);
+    public Fee dtoToEntity(Feedto feedto) {
+        return modelMapper.map(feedto, Fee.class);
     }
     @Override
-    public Carddto entityToDto(Card card) {
-        return modelMapper.map(card, Carddto.class);
+    public Feedto entityToDto(Fee fee) {
+        return modelMapper.map(fee, Feedto.class);
     }
 
+
     @Override
-    public List<Carddto> fromListentityTodtos (List<Card> cards) {
-        return cards.stream()
+    public List<Feedto> fromListentityTodtos(List<Fee> fees) {
+        return fees.stream()
                 .map(this::entityToDto)
                 .collect(Collectors.toList());
     }
+
     @Override
-    public List<Card>fromListdtosToentities(List<Carddto> carddtos){
-        return carddtos.stream()
+    public List<Fee> fromListdtosToentities(List<Feedto> feedtos) {
+        return feedtos.stream()
                 .map(this::dtoToEntity)
                 .collect(Collectors.toList());
     }

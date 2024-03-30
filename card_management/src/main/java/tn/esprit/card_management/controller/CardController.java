@@ -17,20 +17,24 @@ import java.util.List;
 @RequestMapping("/card")
 public class CardController {
     ICardService iCardService;
+
     @GetMapping("retrieve-all-card")
-    public List<Carddto> getCards(){
+    public List<Carddto> getCards() {
         List<Carddto> listCards = iCardService.retrieveAllCards();
-        return listCards ;
+        return listCards;
     }
+
     @PostMapping("/add-card")
     public Card addCard(@RequestBody Carddto c) {
-        Card card = iCardService.addCard(c);
+        Card card = iCardService.demandeCard(c);
         return card;
     }
+
     @DeleteMapping("/remove-card/{numero-card}")
     public void removeCard(@PathVariable("numero-card") String numcard) {
         iCardService.removeCard(numcard);
     }
+
     @GetMapping("/retrieve-card/{numcard}")
     public ResponseEntity<Carddto> getCard(@PathVariable("numcard") String numerocard) {
         try {
@@ -46,9 +50,14 @@ public class CardController {
     }
 
 
-@PutMapping("/modify-card")
-    public Card updateCard(@RequestBody Carddto c){
+    @PutMapping("/modify-card")
+    public Card updateCard(@RequestBody Carddto c) {
         Card card = iCardService.modifyCard(c);
         return card;
-}
+    }
+
+    @PutMapping("/activate-card/{id}")
+    public Card ActivateCard(@PathVariable("id") String c) {
+        return iCardService.activateCard(c);
+    }
 }

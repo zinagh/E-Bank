@@ -7,8 +7,9 @@ import java.util.List;
 
 public interface ICardService {
     List<Carddto> retrieveAllCards();
-    Card addCard(Carddto carddto);
+    Card demandeCard(Carddto carddto);
      void removeCard(String numeroCard);
     Carddto retrieveCard(String numeroCard);
     Card modifyCard(Carddto carddto);
+    Card activateCard(String id);
 }

@@ -5,10 +5,6 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -17,14 +13,16 @@ import java.util.Set;
 @NoArgsConstructor
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Atm {
+public class TransactionLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long Id;
-    String Location;
-    float Somme;
-    boolean Statut;
-    @ManyToMany(mappedBy = "atms")
-    List<Card> cardes = new ArrayList<>();
+    private Long id;
+    private LocalDateTime transactionDate;
+    private double amount;
+    private String receiverId;
+    private String receiverName;
+    private String type;
+    @ManyToOne
+    private Card card;
 
 }

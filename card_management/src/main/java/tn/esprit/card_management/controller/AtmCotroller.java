@@ -29,11 +29,11 @@ public class AtmCotroller {
         return atm;
     }
     @DeleteMapping("/remove-atm/{id}")
-    public void removeAtm(@PathVariable("id") String Id) {
+    public void removeAtm(@PathVariable("id") Long Id) {
         iAtmService.removeAtm(Id);
     }
     @GetMapping("/retrieve-atm/{id}")
-    public ResponseEntity<Atmdto> getAtm(@PathVariable("id") String Id) {
+    public ResponseEntity<Atmdto> getAtm(@PathVariable("id") Long Id) {
         try {
             Atmdto atmdto = iAtmService.retrieveAtm(Id);
             if (atmdto != null) {

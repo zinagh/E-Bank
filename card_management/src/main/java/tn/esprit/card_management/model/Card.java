@@ -28,19 +28,21 @@ public class Card {
     String NIP;
     String CVV;
     boolean activated;
-    boolean disableCard;
-    float CommisionBasedOnAccount;
+    boolean disableCard; //expired
     float solde;
     float plafond;
     @Enumerated(EnumType.STRING)
     NomCardType typeC;
     @ManyToMany
-    @JoinTable(
-            name = "carte_atm",
+    @JoinTable(name = "carte_atm",
             joinColumns = @JoinColumn(name = "numeroCard"),
-            inverseJoinColumns = @JoinColumn(name = "id")
-    )
+            inverseJoinColumns = @JoinColumn(name = "id"))
     Set<Atm> atms = new HashSet<>();
     @OneToMany(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Notification> notifications = new ArrayList<>();
+    List<Reclamation> reclamations = new ArrayList<>();
+    @OneToMany(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<TransactionLog> transactions = new ArrayList<>();
+    @ManyToOne(cascade = CascadeType.ALL)
+    Fee assignedFee;
+
 }

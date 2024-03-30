@@ -10,7 +10,7 @@ import java.util.List;
 public interface IAtmService {
     List<Atmdto> retrieveAllAtms();
     Atm addAtm(Atmdto atmdto);
-    void removeAtm(String Id);
-    Atmdto retrieveAtm(String Id);
+    void removeAtm(Long Id);
+    Atmdto retrieveAtm(Long Id);
     Atm modifyAtm(Atmdto atmdto);
 }

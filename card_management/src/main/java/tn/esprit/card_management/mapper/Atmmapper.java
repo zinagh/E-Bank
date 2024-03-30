@@ -1,5 +1,8 @@
 package tn.esprit.card_management.mapper;
 
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tn.esprit.card_management.dto.Atmdto;
 import tn.esprit.card_management.dto.Carddto;
@@ -10,42 +13,34 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class Atmmapper  implements IAtmmapper  {
 
 
-    @Override
-    public Atmdto fromentityTodto(Atm atm) {
-        Atmdto  atmdto = new Atmdto();
-        atmdto.setId(atm.getId());
-        atmdto.setLocation(atm.getLocation());
-        atmdto.setSomme(atm.getSomme());
-        atmdto.setStatut(atm.isStatut());
-        atmdto.setRecu(atm.getRecu());
-        return atmdto;
-    }
+    @Autowired
+    private final ModelMapper modelMapper;
 
     @Override
-    public Atm fromdtoToentity(Atmdto atmdto) {
-        Atm atm = new Atm();
-        atm.setId(atmdto.getId());
-        atm.setLocation(atmdto.getLocation());
-        atm.setSomme(atmdto.getSomme());
-        atm.setStatut(atmdto.isStatut());
-        atm.setRecu(atmdto.getRecu());
-        return atm;
+    public Atm dtoToEntity(Atmdto atmDto) {
+        return modelMapper.map(atmDto, Atm.class);
     }
+    @Override
+    public Atmdto entityToDto(Atm atm) {
+        return modelMapper.map(atm, Atmdto.class);
+    }
+
 
     @Override
     public List<Atmdto> fromListentityTodtos(List<Atm> atms) {
         return atms.stream()
-                .map(this::fromentityTodto)
+                .map(this::entityToDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<Atm> fromListdtosToentities(List<Atmdto> atmdtos) {
         return atmdtos.stream()
-                .map(this::fromdtoToentity)
+                .map(this::dtoToEntity)
                 .collect(Collectors.toList());
     }
 

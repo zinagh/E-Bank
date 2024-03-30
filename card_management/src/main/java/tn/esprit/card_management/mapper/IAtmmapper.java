@@ -8,8 +8,10 @@ import tn.esprit.card_management.model.Card;
 import java.util.List;
 
 public interface IAtmmapper {
-    Atmdto fromentityTodto(Atm atm);
-    Atm fromdtoToentity(Atmdto atmdto);
+
+     Atm dtoToEntity(Atmdto atmDto);
+     Atmdto entityToDto(Atm atm);
+
     List<Atmdto> fromListentityTodtos (List<Atm> atms);
 
     List<Atm>fromListdtosToentities(List<Atmdto> atmdtos);
