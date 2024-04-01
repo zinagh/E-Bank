@@ -1,4 +1,4 @@
-package tn.esprit.account_managment.dto;
+package tn.esprit.account_managment.model;
 
 public enum TypeBankAccount
 {

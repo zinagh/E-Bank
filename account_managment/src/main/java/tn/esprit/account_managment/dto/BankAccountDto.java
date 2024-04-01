@@ -1,30 +1,38 @@
 package tn.esprit.account_managment.dto;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.*;
-import tn.esprit.account_managment.model.UserAsStudentonBA;
+import org.springframework.context.annotation.Lazy;
+import tn.esprit.account_managment.model.Fee;
+import tn.esprit.account_managment.model.InternationalTransfer;
+import tn.esprit.account_managment.model.TypeBankAccount;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
-@Setter
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class BankAccountDto
-{
+public class BankAccountDto {
+    private String accountNumber;
     private String titulaire;
+    private String employeeUsername;
     private Double account_balance;
-    private Integer account_type;
     private Date creation_date;
     private Boolean activated;
     private Date deactivation_date;
-    private Float account_limit;
-    private Float amount_fund;
-    private Integer code;
     private TypeBankAccount type;
-    private Float prime_rates;
     private Boolean negativeSoldeAllowed;
     private Float negativeSoldeAmount;
     private Boolean negativeSoldeDepassement;
     private Date negativeSoldeDepassementDay;
-    private UserAsStudentonBADto userAsStudent;
+    private Date datetransaction;
+    //
+    private List<InternationalTransferDto> internationalTransfers;
+    private FeeDto defaultFees;
 }
