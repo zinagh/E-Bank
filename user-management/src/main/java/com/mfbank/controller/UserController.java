@@ -16,6 +16,7 @@ import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -54,6 +55,7 @@ public class UserController {
 
 
     @GetMapping("/retrieve-all-users")
+    @PreAuthorize("hasRole('EMPLOYEE')")
     public List<Userdto> retrieveAllUsers() {
         List<Userdto> listUserdtos = userService.retrieveAllUsers();
         return listUserdtos;
@@ -78,7 +80,7 @@ public class UserController {
        return userService.getAdditionalDebtForecast(plan);
 
     }
-    @GetMapping("/getAdditionalDebtForecast")
+    @GetMapping("/getDaysToPayoffByPrincipal")
     public Integer getDaysToPayoffByPrincipal(@RequestBody RepaymentPlanDto plan) {
         return userService.getDaysToPayoffByPrincipal(plan);
 
