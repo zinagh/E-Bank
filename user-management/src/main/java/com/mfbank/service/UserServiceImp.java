@@ -16,6 +16,10 @@ import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -28,7 +32,9 @@ import java.util.*;
 @RequiredArgsConstructor
 public class UserServiceImp  implements IUserService{
     private final WebClient.Builder webClient;
-
+    @Value("${principle-attribute}")
+    private String principleAttribut;
+    private SecurityContextHolder securityContextHolder;
     @Autowired
     Imapper imapper;
     @Autowired
@@ -39,16 +45,19 @@ public class UserServiceImp  implements IUserService{
     KeycloakSecurity keycloakSecurity;
     @Value("${realm}")
     private String realm;
+    @Override
     public List<Userdto> retrieveAllUsers() {
      List<User>  users =userRepository.findAll();
      List<Userdto> userdtos = usermapper.usersTouserdtos(users);
      return userdtos;
     }
+    @Override
     public Userdto retrieveUser(String userName) {
         User user=  userRepository.findById(userName).get();
         Userdto userdto = usermapper.userTouserdto(user);
         return userdto;
     }
+    @Override
     public void addUser(Userdto userdto ) {
         UserRepresentation userRepresentation = imapper.mapuserRep(userdto);
         System.out.println(userRepresentation);
@@ -63,6 +72,7 @@ public class UserServiceImp  implements IUserService{
             userRepository.save(user);
         }
     }
+    @Override
     public void removeUser(String userName) {
         Keycloak keycloak = keycloakSecurity.getKeycloakInstance();
         List<UserRepresentation> userRepresentations = keycloak.realm(realm).users().search(userName);
@@ -83,6 +93,7 @@ public class UserServiceImp  implements IUserService{
                 .block(Duration.ofSeconds(5));
 
     }
+    @Override
     public User modifyUser(Userdto userdto) {
         Keycloak keycloak=keycloakSecurity.getKeycloakInstance();
         List<UserRepresentation>  userRepresentations=keycloak
@@ -95,6 +106,7 @@ public class UserServiceImp  implements IUserService{
         userRepository.save(user);
         return user;
     }
+    @Override
     public String updatepassword(String username ,String newpass ,String verifpass){
         if (newpass.equals(verifpass)) {
             Keycloak keycloak = keycloakSecurity.getKeycloakInstance();
@@ -111,10 +123,12 @@ public class UserServiceImp  implements IUserService{
 return "password is updated";
         } return "comparaison failed";
     }
+    @Override
     public  Double getAdditionalDebtForecast(RepaymentPlanDto plan) {
         Double projectedTotalDebt = plan.getStartingBalance() - plan.getRepaymentOfCcapital();
         return (projectedTotalDebt - plan.getStartingBalance()) / plan.getStartingBalance();
     }
+    @Override
     public  Integer getDaysToPayoffByPrincipal(RepaymentPlanDto plan) {
         Double remainingBalance = plan.getStartingBalance();
         int days = 0;
@@ -140,7 +154,7 @@ return "password is updated";
 
         return days;
     }
-
+    @Override
     public  Double getAverageDailyInterestAccrual(CreditDto credit) {
         // Handle null CreditDto gracefully (optional)
         if (credit == null) {
@@ -161,7 +175,7 @@ return "password is updated";
         return dailyInterestRate * startingBalance;
     }
 
-
+    @Override
     public Double getProjectedOutstandingBalance(RepaymentPlanDto plan, int periods) {
 
             Double remainingBalance = plan.getStartingBalance();
@@ -178,13 +192,19 @@ return "password is updated";
 
             return remainingBalance;
         }
-
+    @Override
     public  Double getCoverageRatioByPlannedRepayments(RepaymentPlanDto plan) {
         Double totalRepayment = plan.getStartingBalanceimbursementAount() ;
         Double totalInterest = plan.getInterest() ;
         return totalRepayment / totalInterest ;
     }
 
+
+
+
+
+
+    @Override
     public  Double getAccountActivityRatio(BankAccountDto account, Date startDate, Date endDate) {
         List<InternationalTransferDto> transfers = account.getInternationalTransfers();
         int transferCount = 0;
@@ -204,29 +224,46 @@ return "password is updated";
     }
 
 
-
-    public  Double getFeeIncomePerAccount(BankAccountDto account) {
+    @Override
+    public  Double getFeeIncomePerAccount() {
+        BankAccountDto account = webClient.build()
+                .get()
+                .uri("http://account-management/account/getbankaccountbyTitulaire/" + getUsername())
+                .retrieve()
+                .bodyToMono(BankAccountDto.class)
+                .block(Duration.ofSeconds(5));
         Double totalFees = 0.0;
-        if (account.getDefaultFees() != null) {
-            totalFees += account.getDefaultFees().getAmountPercent(); // Assuming amountPercent represents income
-        }
+        Double feePercentage = 0.0;
+        Double totalSentTransactions = 0.0;
+        feePercentage = account.getInternationalTransfers().get(0).getInternationnalFees().getAmountPercent();
         for (InternationalTransferDto transfer : account.getInternationalTransfers()) {
-            if (transfer.getInternationnalFees() != null) {
-                totalFees += transfer.getInternationnalFees().getAmountPercent(); // Assuming amountPercent represents income
+            if (transfer.getInternationnalFees() != null && transfer.isSendOrReceive() == true) {
+                totalSentTransactions += transfer.getAmount();
             }
         }
+        totalFees = (totalSentTransactions * feePercentage) / 100;
         return totalFees;
     }
 
+    @Override
+    public  String getAccountUtilizationRatio() {
+        BankAccountDto account = webClient.build()
+                .get()
+                .uri("http://account-management/account/getbankaccountbyTitulaire/" + getUsername())
+                .retrieve()
+                .bodyToMono(BankAccountDto.class)
+                .block(Duration.ofSeconds(5));
 
-    public  Double getAccountUtilizationRatio(BankAccountDto account) {
+        Double result =0.0;
         if (!account.getNegativeSoldeAllowed()) {
-            return 0.0; // No negative balance allowed, utilization is 0
+            return "0%";
         }
 
-        Double availableBalance = account.getAccount_balance() + account.getNegativeSoldeAmount();
-        return account.getAccount_balance() / availableBalance;
+        Double availableBalance = account.getAccount_balance() - account.getNegativeSoldeAmount();
+        result = Math.round(account.getAccount_balance() / availableBalance * 100.0) / 100.0;
+        return (result * 100) + "%";
     }
+    @Override
     public  Double getPercentageOutgoingTransfers(BankAccountDto account) {
         int totalTransfers = account.getInternationalTransfers().size();
         int outgoingTransfers = 0;
@@ -244,6 +281,7 @@ return "password is updated";
 
         return (double) outgoingTransfers / totalTransfers * 100;
     }
+    @Override
     public  Double getAverageInternationalTransferFee(List<InternationalTransferDto> transfers) {
         Double totalFees = 0.0;
         for (InternationalTransferDto transfer : transfers) {
@@ -258,6 +296,13 @@ return "password is updated";
         return totalFees / transfers.size();
     }
 
-
+    public String getUsername() {
+        Authentication authentication = securityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication instanceof JwtAuthenticationToken) {
+            Jwt jwt = ((JwtAuthenticationToken) authentication).getToken();
+            return (String) jwt.getClaim(principleAttribut);
+        }
+        throw new IllegalStateException("Could not retrieve token from SecurityContext");
+    }
 
 }

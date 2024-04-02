@@ -1,5 +1,6 @@
 package com.mfbank.account_managment.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,8 +31,10 @@ public class InternationalTransfer {
 
 
     @ManyToOne
+    @JsonIgnore
     private BankAccount bankAccountToMakeTransfert;
 
     @ManyToOne
+    @JsonIgnore
     private Fee internationnalFees;
 }

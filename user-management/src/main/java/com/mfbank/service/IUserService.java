@@ -27,8 +27,8 @@ public interface IUserService {
 
 
     Double getAccountActivityRatio(BankAccountDto account, Date startDate, Date endDate);
-    Double getFeeIncomePerAccount(BankAccountDto account);
-    Double getAccountUtilizationRatio(BankAccountDto account);
+    Double getFeeIncomePerAccount();
+    String getAccountUtilizationRatio();
     Double getPercentageOutgoingTransfers(BankAccountDto account);
     Double getAverageInternationalTransferFee(List<InternationalTransferDto> transfers);
 

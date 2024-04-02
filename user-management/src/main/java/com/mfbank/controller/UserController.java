@@ -112,15 +112,15 @@ public class UserController {
 
 
     @GetMapping("/getFeeIncomePerAccount")
-    public Double getFeeIncomePerAccount(@RequestBody BankAccountDto account) {
-        return userService.getFeeIncomePerAccount(account);
+    public Double getFeeIncomePerAccount() {
+        return userService.getFeeIncomePerAccount();
 
     }
 
 
     @GetMapping("/getAccountUtilizationRatio")
-    public Double getAccountUtilizationRatio(@RequestBody BankAccountDto account) {
-        return userService.getAccountUtilizationRatio(account);
+    public String getAccountUtilizationRatio() {
+        return userService.getAccountUtilizationRatio();
 
     }
 

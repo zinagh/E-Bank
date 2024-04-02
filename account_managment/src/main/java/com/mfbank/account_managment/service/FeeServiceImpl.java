@@ -36,12 +36,12 @@ public class FeeServiceImpl implements IFeeService
     @Override
     public void addFee(FeeDto feeDto) {
         if(feeDto.getFeeType().toString().equals("TRANSACTION_FEE_currentAccount")){
-            feeDto.setAmountPercent(300);
+            feeDto.setAmountPercent(4);
         } else if (feeDto.getFeeType().toString().equals("TRANSACTION_FEE_savingsAccount")) {
-            feeDto.setAmountPercent(150);
+            feeDto.setAmountPercent(2);
 
         } else if (feeDto.getFeeType().toString().equals("CURRENCY_CONVERSION_FEE")) {
-            feeDto.setAmountPercent(500);
+            feeDto.setAmountPercent(6);
 
         }
         Fee fee = iFeeMapper.toEntity(feeDto);

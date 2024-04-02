@@ -49,7 +49,7 @@ public class InternationalTransferServiceImpl implements IInternationalTransferS
     @Override
     public void addInternationalTransfer(InternationalTransferDto internationalTransferDto)    {
         InternationalTransfer internationalTransfer = iInternationalTransferMapper.toEntity(internationalTransferDto);
-        String bankAccountId = internationalTransferDto.getBankAccountToMakeTransfert().getAccountNumber();
+        String bankAccountId = internationalTransferDto.getBankAccountToMakeTransfert();
         Optional<BankAccount> bankAccount = bankAccountRepository.findById(bankAccountId);
         if(bankAccount.isPresent()){
             BankAccount bankAccountToadd = bankAccount.get();
@@ -59,7 +59,6 @@ public class InternationalTransferServiceImpl implements IInternationalTransferS
         if(!fees.isEmpty()){
             Fee fee = fees.get(0);
             internationalTransfer.setInternationnalFees(fee);
-            internationalTransfer.setAmount(fee.getAmountPercent());
         }
         internationalTransfer.setApproval(false);
         internationalTransferRepository.save(internationalTransfer);

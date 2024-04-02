@@ -141,7 +141,7 @@ public class UserServiceTest {
         Mockito.when(mockAccount.getInternationalTransfers()).thenReturn(transfers);
 
         // Call the method to test
-        Double totalFees = userService.getFeeIncomePerAccount(mockAccount);
+        Double totalFees = userService.getFeeIncomePerAccount();
 
         // Expected total fees calculation
         double expectedTotal = defaultFeeAmount + (numTransfers * transferFeeAmount);
@@ -165,7 +165,7 @@ public class UserServiceTest {
             }
 
             // Call the method to test
-            Double utilizationRatio = userService.getAccountUtilizationRatio(mockAccount);
+            Double utilizationRatio = userService.getAccountUtilizationRatio();
 
             // Assertions
             if (negativeSoldeAllowed) {

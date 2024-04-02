@@ -19,7 +19,7 @@ public class InternationalTransferDto {
     private boolean approval;
     private String employeeApprovalUsername;
     private String status;
-    private BankAccountDto bankAccountToMakeTransfert;
+    private String bankAccountToMakeTransfert;
     private FeeDto internationnalFees;
     private Date date;
 }

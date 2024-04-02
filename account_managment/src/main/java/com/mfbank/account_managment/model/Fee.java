@@ -1,4 +1,5 @@
 package com.mfbank.account_managment.model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,8 +23,10 @@ public class Fee {
     private double amountPercent;
     private String description;
     @OneToMany(mappedBy = "defaultFees")
+    @JsonIgnore
     private List<BankAccount> bankAccounts;
     @OneToMany(mappedBy = "internationnalFees")
+    @JsonIgnore
     private List<InternationalTransfer> internationalTransfers;
 
 }
