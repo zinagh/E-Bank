@@ -9,8 +9,16 @@ import java.util.List;
 
 public interface IAtmService {
     List<Atmdto> retrieveAllAtms();
+
     Atm addAtm(Atmdto atmdto);
+
     void removeAtm(Long Id);
+
     Atmdto retrieveAtm(Long Id);
+
     Atm modifyAtm(Atmdto atmdto);
+
+    boolean validerRetrait(String numeroCard, String codeSecurite, float montant, Atmdto atmdto);
+
+    void effectuerRetrait(float montant, Atmdto atm);
 }

@@ -23,8 +23,9 @@ public class Atm {
     Long Id;
     String Location;
     float Somme;
-    boolean Statut;
+    boolean Activeted;
+    String image;
     @ManyToMany(mappedBy = "atms")
-    List<Card> cardes = new ArrayList<>();
+    List<Card> cardes ;
 
 }

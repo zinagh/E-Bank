@@ -15,4 +15,7 @@ public class Atmdto {
     Long Id;
     String Location;
     float Somme;
-    boolean Statut;}
+    boolean Activated;
+    String image;
+}
+

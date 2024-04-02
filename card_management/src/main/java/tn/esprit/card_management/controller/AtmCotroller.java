@@ -1,6 +1,8 @@
 package tn.esprit.card_management.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @RequestMapping("/atm")
 public class AtmCotroller {
-    IAtmService iAtmService;
+    private IAtmService iAtmService;
     @GetMapping("retrieve-all-atm")
     public List<Atmdto> getAtms(){
         List<Atmdto> listAtms = iAtmService.retrieveAllAtms();
@@ -51,4 +53,23 @@ public class AtmCotroller {
         return atm;
     }
 
+    @PostMapping("/retirer-argent")
+    public String retirerArgent(
+            @RequestParam float montant,
+            @RequestParam long id,
+            @RequestParam String numeroCard,
+            @RequestParam String codeSecurite
+    ) {
+        Atmdto atmdto =iAtmService.retrieveAtm(id);
+        // Valider le retrait
+        if (!iAtmService.validerRetrait(numeroCard,codeSecurite, montant, atmdto)) {
+            return "erreur-retrait";
+        }
+        iAtmService.effectuerRetrait(montant, atmdto);
+        return "confirmation-retrait";
+    }
+
 }
+
+
+
