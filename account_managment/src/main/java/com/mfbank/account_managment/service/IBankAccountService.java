@@ -10,4 +10,5 @@ public interface IBankAccountService
     void addBankAccount(BankAccountDto bankAccountDto);
     void removeBankAccount(String bankAccountId);
     void modifyBankAccount(BankAccountDto bankAccountDto);
+    BankAccountDto retrieveBankAccountByTitulaire(String bankAccountTitulaire);
 }

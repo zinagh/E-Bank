@@ -35,7 +35,11 @@ public class bankAccountController
     @GetMapping("/getbankaccountby/{bankAccountId}")
     public BankAccountDto getbankaccountby(@PathVariable String bankAccountId) {
         return iBankAccountService.retrieveBankAccount(bankAccountId);
+    }
 
+    @GetMapping("/getbankaccountbyTitulaire/{bankAccountTitulaire}")
+    public BankAccountDto getbankaccountbyTitulaire(@PathVariable String bankAccountTitulaire) {
+        return iBankAccountService.retrieveBankAccountByTitulaire(bankAccountTitulaire);
     }
 
     @GetMapping("/getfeeby/{feeId}")

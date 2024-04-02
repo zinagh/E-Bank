@@ -70,7 +70,6 @@ public class UserController {
 
     @DeleteMapping("/remove-user/{userName}")
     public void removeUser(@PathVariable("userName") String userName) {
-
         userService.removeUser(userName);
     }
 

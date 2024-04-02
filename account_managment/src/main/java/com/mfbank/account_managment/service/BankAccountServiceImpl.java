@@ -4,6 +4,11 @@ import com.mfbank.account_managment.repository.BankAccountRepository;
 import com.mfbank.account_managment.repository.FeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import com.mfbank.account_managment.dto.BankAccountDto;
 import com.mfbank.account_managment.mapper.IBankAccountMapper;
@@ -23,6 +28,10 @@ public class BankAccountServiceImpl implements  IBankAccountService{
     private final FeeRepository feeRepository;
     private final IBankAccountMapper iBankAccountMapper;
     private final WebClient.Builder webClient;
+    private SecurityContextHolder securityContextHolder;
+
+    @Value("${principle-attribute}")
+    private String principleAttribut;
 
     @Override
     public List<BankAccountDto> retrieveAllBankAccounts() {
@@ -57,10 +66,18 @@ public class BankAccountServiceImpl implements  IBankAccountService{
 
     }
 
+    @Override
+    public BankAccountDto retrieveBankAccountByTitulaire(String bankAccountTitulaire) {
+        BankAccount bankAccount =  bankAccountRepository.findByTitulaire(bankAccountTitulaire).get();
+        BankAccountDto bankAccountdto = iBankAccountMapper.toDto(bankAccount);
+        return bankAccountdto;
+
+    }
+
       @Override
     public void addBankAccount(BankAccountDto bankAccountDto) {
           BankAccount bankAccount = iBankAccountMapper.toEntity(bankAccountDto);
-
+          bankAccount.setTitulaire(getUsername());
           String typeBankAccount = bankAccountDto.getType().toString();
            Fee fee = getFeeFromBankAccount(typeBankAccount);
            if(fee != null) {
@@ -105,4 +122,14 @@ public class BankAccountServiceImpl implements  IBankAccountService{
         BankAccount bankAccount = iBankAccountMapper.toEntity(bankAccountDto);
          bankAccountRepository.save(bankAccount);
     }
+
+    public String getUsername() {
+        Authentication authentication = securityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication instanceof JwtAuthenticationToken) {
+            Jwt jwt = ((JwtAuthenticationToken) authentication).getToken();
+            return (String) jwt.getClaim(principleAttribut);
+        }
+        throw new IllegalStateException("Could not retrieve token from SecurityContext");
+    }
+
 }

@@ -12,4 +12,6 @@ import java.util.Optional;
 public interface BankAccountRepository extends JpaRepository<BankAccount , String> {
     @Query("SELECT ba FROM BankAccount ba JOIN ba.internationalTransfers i WHERE i.id = ?1")
     Optional<BankAccount> findByInternationalTransferId(Long internationalTransferId);
+
+    Optional<BankAccount> findByTitulaire(String titulaire);
 }

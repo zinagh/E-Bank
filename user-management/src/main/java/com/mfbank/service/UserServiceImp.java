@@ -17,7 +17,9 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.*;
@@ -25,6 +27,8 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImp  implements IUserService{
+    private final WebClient.Builder webClient;
+
     @Autowired
     Imapper imapper;
     @Autowired
@@ -65,6 +69,19 @@ public class UserServiceImp  implements IUserService{
         String id = userRepresentations.get(0).getId();
         keycloak.realm(realm).users().delete(id);
         userRepository.deleteById(userName);
+        BankAccountDto bankAccountDto = webClient.build()
+                .get()
+                .uri("http://account-management/account/getbankaccountbyTitulaire/" + userName)
+                .retrieve()
+                .bodyToMono(BankAccountDto.class)
+                .block(Duration.ofSeconds(5));
+        webClient.build()
+                .delete()
+                .uri("http://account-management/account/deletebankaccountby/" + bankAccountDto.getAccountNumber())
+                .retrieve()
+                .bodyToMono(Void.class)
+                .block(Duration.ofSeconds(5));
+
     }
     public User modifyUser(Userdto userdto) {
         Keycloak keycloak=keycloakSecurity.getKeycloakInstance();
