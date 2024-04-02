@@ -65,7 +65,7 @@ public class AtmCotroller {
         if (!iAtmService.validerRetrait(numeroCard,codeSecurite, montant, atmdto)) {
             return "erreur-retrait";
         }
-        iAtmService.effectuerRetrait(montant, atmdto);
+        iAtmService.effectuerRetrait(numeroCard, montant, atmdto);
         return "confirmation-retrait";
     }
 

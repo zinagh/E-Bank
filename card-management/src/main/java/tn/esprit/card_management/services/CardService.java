@@ -2,8 +2,15 @@ package tn.esprit.card_management.services;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 import tn.esprit.card_management.dto.Carddto;
+import tn.esprit.card_management.dtouser.Userdto;
 import tn.esprit.card_management.mapper.ICardmapper;
 import tn.esprit.card_management.model.Card;
 import tn.esprit.card_management.model.Fee;
@@ -12,6 +19,7 @@ import tn.esprit.card_management.model.NomCardType;
 import tn.esprit.card_management.repository.CardRepository;
 import tn.esprit.card_management.repository.FeeRepository;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -24,12 +32,17 @@ public class CardService implements ICardService {
     private final ICardmapper iCardmapper;
     private final CardRepository cardRepository;
     private final FeeRepository feeRepository;
+    private final WebClient.Builder webClient;
+    private SecurityContextHolder securityContextHolder;
+    @Value("${principle-attribute}")
+    private String principleAttribut;
 
     @Override
     public Card demandeCard(Carddto carddto) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime inThreeYears = now.plusYears(3);
         Card card = iCardmapper.dtoToEntity(carddto);
+        card.setTitulaire(getUsername());
         card.setActivated(false);
         card.setDisableCard(false);
         card.setDateExpiration(inThreeYears);
@@ -66,6 +79,16 @@ public class CardService implements ICardService {
     public List<Carddto> retrieveAllCards() {
         List<Card> cards = cardRepository.findAll();
         List<Carddto> carddtos = iCardmapper.fromListentityTodtos(cards);
+
+    for(Carddto carddto :  carddtos){
+        Userdto userdto = webClient.build()
+                .get()
+                .uri("http://user-management/user/retrieve-user/" + carddto.getTitulaire())
+                .retrieve()
+                .bodyToMono(Userdto.class)
+                .block(Duration.ofSeconds(5));
+        carddto.setUserdto(userdto);
+    }
         return carddtos;
     }
 
@@ -78,7 +101,17 @@ public class CardService implements ICardService {
     @Override
     public Carddto retrieveCard(String numeroCard) {
         Card card = cardRepository.findById(numeroCard).get();
-        return iCardmapper.entityToDto(card);
+        Carddto carddto = iCardmapper.entityToDto(card);
+        Userdto userdto = webClient.build()
+                .get()
+                .uri("http://user-management/user/retrieve-user/" + carddto.getTitulaire())
+                .retrieve()
+                .bodyToMono(Userdto.class)
+                .block(Duration.ofSeconds(5));
+        carddto.setUserdto(userdto);
+
+        return carddto;
+
     }
 
     @Override
@@ -128,5 +161,12 @@ public class CardService implements ICardService {
         return randomAsString;
     }
 
-
+    public String getUsername() {
+        Authentication authentication = securityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication instanceof JwtAuthenticationToken) {
+            Jwt jwt = ((JwtAuthenticationToken) authentication).getToken();
+            return (String) jwt.getClaim(principleAttribut);
+        }
+        throw new IllegalStateException("Could not retrieve token from SecurityContext");
+    }
 }

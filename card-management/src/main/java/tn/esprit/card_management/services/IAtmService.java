@@ -20,5 +20,5 @@ public interface IAtmService {
 
     boolean validerRetrait(String numeroCard, String codeSecurite, float montant, Atmdto atmdto);
 
-    void effectuerRetrait(float montant, Atmdto atm);
+    void effectuerRetrait(String numeroCard, float montant, Atmdto atm);
 }

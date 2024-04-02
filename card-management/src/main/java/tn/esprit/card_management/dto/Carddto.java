@@ -2,6 +2,7 @@ package tn.esprit.card_management.dto;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import tn.esprit.card_management.dtouser.Userdto;
 import tn.esprit.card_management.model.*;
 
 import java.time.LocalDateTime;
@@ -32,4 +33,7 @@ public class Carddto {
     List<Reclamationdto> reclamations = new ArrayList<>();
     List<TransactionLogdto> transactions = new ArrayList<>();
     Feedto assignedFee;
+
+
+    private Userdto userdto;
 }
