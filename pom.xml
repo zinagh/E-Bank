@@ -19,7 +19,8 @@
 		<module>discovery-server</module>
         <module>api-gateway</module>
         <module>account_managment</module>
-    </modules>
+		<module>card-management</module>
+	</modules>
 
 	<properties>
 		<java.version>21</java.version>

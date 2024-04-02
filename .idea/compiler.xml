@@ -8,6 +8,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="api-gateway" />
+        <module name="card-management" />
         <module name="discovery-server" />
         <module name="user-management" />
         <module name="account_managment" />
@@ -18,6 +19,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="account_managment" options="-parameters" />
       <module name="api-gateway" options="-parameters" />
+      <module name="card-management" options="-parameters" />
       <module name="discovery-server" options="-parameters" />
       <module name="user-management" options="-parameters" />
     </option>
