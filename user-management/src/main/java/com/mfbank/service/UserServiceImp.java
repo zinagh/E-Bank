@@ -264,37 +264,36 @@ return "password is updated";
         return (result * 100) + "%";
     }
     @Override
-    public  Double getPercentageOutgoingTransfers(BankAccountDto account) {
+    public  String getPercentageOutgoingTransfers() {
+        BankAccountDto account = webClient.build()
+                .get()
+                .uri("http://account-management/account/getbankaccountbyTitulaire/" + getUsername())
+                .retrieve()
+                .bodyToMono(BankAccountDto.class)
+                .block(Duration.ofSeconds(5));
+        assert account != null;
         int totalTransfers = account.getInternationalTransfers().size();
-        int outgoingTransfers = 0;
-
-        for (InternationalTransferDto transfer : account.getInternationalTransfers()) {
-            if (!transfer.isSendOrReceive()) { // Assuming sendOrReceive = false indicates outgoing
-                outgoingTransfers++;
-            }
-        }
-
-        // Handle potential division by zero
         if (totalTransfers == 0) {
-            return 0.0; // Or another appropriate value for no transfers
-        }
+            return "0.0%";
+        } else {
+            int outgoingTransfers = 0;
+            for (InternationalTransferDto transfer : account.getInternationalTransfers()) {
+                if (transfer.isSendOrReceive() == false) {
+                    outgoingTransfers++;
+                }
+            }
 
-        return (double) outgoingTransfers / totalTransfers * 100;
+            System.out.print("outgoingTransfers " + outgoingTransfers);
+            System.out.print("totalTransfers " + totalTransfers);
+
+            Double result = Math.round((double) outgoingTransfers / totalTransfers * 100.0) / 100.0;
+            System.out.print("result " + result);
+
+
+            return (result * 100) + "%";
+        }
     }
-    @Override
-    public  Double getAverageInternationalTransferFee(List<InternationalTransferDto> transfers) {
-        Double totalFees = 0.0;
-        for (InternationalTransferDto transfer : transfers) {
-            totalFees += transfer.getFees();
-        }
 
-        // Handle potential division by zero
-        if (transfers.isEmpty()) {
-            return 0.0; // Or another appropriate value for no transfers
-        }
-
-        return totalFees / transfers.size();
-    }
 
     public String getUsername() {
         Authentication authentication = securityContextHolder.getContext().getAuthentication();

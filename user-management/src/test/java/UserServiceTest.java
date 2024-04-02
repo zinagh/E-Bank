@@ -165,7 +165,7 @@ public class UserServiceTest {
             }
 
             // Call the method to test
-            Double utilizationRatio = userService.getAccountUtilizationRatio();
+            String utilizationRatio = userService.getAccountUtilizationRatio();
 
             // Assertions
             if (negativeSoldeAllowed) {
@@ -199,7 +199,7 @@ public class UserServiceTest {
             Mockito.when(mockAccount.getInternationalTransfers()).thenReturn(transfers);
 
             // Call the method to test
-            Double percentage = userService.getPercentageOutgoingTransfers(mockAccount);
+            String percentage = userService.getPercentageOutgoingTransfers();
 
             // Expected percentage calculation
             double expectedPercentage = (double) outgoingTransferCount / totalTransfers * 100;
@@ -211,33 +211,10 @@ public class UserServiceTest {
         // Test handling for no transfers
         BankAccountDto mockAccountNoTransfers = Mockito.mock(BankAccountDto.class);
         Mockito.when(mockAccountNoTransfers.getInternationalTransfers()).thenReturn(Collections.emptyList());
-        Double percentageWithNoTransfers = userService.getPercentageOutgoingTransfers(mockAccountNoTransfers);
+        String percentageWithNoTransfers = userService.getPercentageOutgoingTransfers();
         assertEquals(0.0, percentageWithNoTransfers);}
 
-    @Test
-    public void testGetAverageInternationalTransferFee() {
-        List<List<Double>> feesList = Arrays.asList(Arrays.asList(10.0, 20.0, 15.0), Arrays.asList(5.0), Arrays.asList());
 
-        feesList.stream()
-                .forEach(fees -> {
-                    // Mock setup
-                    List<InternationalTransferDto> mockTransfers = new ArrayList<>();
-                    for (Double fee : fees) {
-                        InternationalTransferDto mockTransfer = Mockito.mock(InternationalTransferDto.class);
-                        Mockito.when(mockTransfer.getFees()).thenReturn(fee);
-                        mockTransfers.add(mockTransfer);
-                    }
-
-                    // Call the method to test
-                    Double averageFee = userService.getAverageInternationalTransferFee(mockTransfers);
-
-                    // Expected average calculation
-                    Double expectedAverage = fees.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
-
-                    // Assertions
-                    assertEquals(expectedAverage, averageFee);
-                });
-    }
       /*  @Test
     public void testGetAccountActivityRatio() {
         // Create BankAccountDto object with sample transfers

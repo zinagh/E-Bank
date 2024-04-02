@@ -119,21 +119,16 @@ public class UserController {
 
 
     @GetMapping("/getAccountUtilizationRatio")
-    public String getAccountUtilizationRatio() {
+    public String
+    getAccountUtilizationRatio() {
         return userService.getAccountUtilizationRatio();
 
     }
 
     @GetMapping("/getPercentageOutgoingTransfers")
-    public Double getPercentageOutgoingTransfers(@RequestBody BankAccountDto account) {
-        return userService.getPercentageOutgoingTransfers(account);
+    public String getPercentageOutgoingTransfers() {
+        return userService.getPercentageOutgoingTransfers();
 
     }
 
-    // Double getAverageInternationalTransferFee(List<InternationalTransferDto> transfers)
-    @GetMapping("/getAverageInternationalTransferFee")
-    public Double getAverageInternationalTransferFee(@RequestBody List<InternationalTransferDto> transfers) {
-        return userService.getAverageInternationalTransferFee(transfers);
-
-    }
 }
