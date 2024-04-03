@@ -20,7 +20,8 @@
         <module>api-gateway</module>
         <module>account_managment</module>
 		<module>card-management</module>
-	</modules>
+        <module>transaction-management</module>
+    </modules>
 
 	<properties>
 		<java.version>21</java.version>
