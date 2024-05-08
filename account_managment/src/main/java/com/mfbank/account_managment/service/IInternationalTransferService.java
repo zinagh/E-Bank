@@ -1,16 +1,16 @@
 package com.mfbank.account_managment.service;
 import com.mfbank.account_managment.dto.InternationalTransferDto;
+import com.mfbank.account_managment.model.BankAccount;
 
-import java.util.Date;
 import java.util.List;
 
 public interface IInternationalTransferService
 {
-    public List<InternationalTransferDto> retrieveAllInternationalTransfers();
-    public InternationalTransferDto retrieveInternationalTransfer(Long internationalTransferId);
-    public void addInternationalTransfer(InternationalTransferDto internationalTransferDto);
-    public void removeInternationalTransfer(Long internationalTransferId);
-    public void modifyInternationalTransfer(InternationalTransferDto internationalTransferDto);
-    public void approveinternationaltransfer(String employeeApprovalUsername, Long id);
-
+    List<InternationalTransferDto> retrieveAllInternationalTransfers();
+    InternationalTransferDto retrieveInternationalTransfer(Long internationalTransferId);
+    void addInternationalTransfer(InternationalTransferDto internationalTransferDto);
+    void removeInternationalTransfer(Long internationalTransferId);
+    void modifyInternationalTransfer(InternationalTransferDto internationalTransferDto);
+    void approveinternationaltransfer(String employeeApprovalUsername, Long id);
+    List<Float> getstatisticsForChart (String bankAccountId, int month);
 }

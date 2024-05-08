@@ -1,6 +1,7 @@
 package com.mfbank.account_managment.controller;
+import com.mfbank.account_managment.dto.QuestionDto;
+import com.mfbank.account_managment.model.BankAccount;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.mfbank.account_managment.dto.BankAccountDto;
 import com.mfbank.account_managment.dto.FeeDto;
@@ -8,12 +9,11 @@ import com.mfbank.account_managment.dto.InternationalTransferDto;
 import com.mfbank.account_managment.service.IBankAccountService;
 import com.mfbank.account_managment.service.IFeeService;
 import com.mfbank.account_managment.service.IInternationalTransferService;
-
-import java.util.Date;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+
 public class bankAccountController
 {
     private final IBankAccountService iBankAccountService;
@@ -39,23 +39,33 @@ public class bankAccountController
     public BankAccountDto getbankaccountby(@PathVariable String bankAccountId) {
         return iBankAccountService.retrieveBankAccount(bankAccountId);
     }
-    @GetMapping("/getaccountbalancebyTitulaire/{bankAccountTitulaire}")
-    public Double getAccountBalanceByTitulaire(@PathVariable("bankAccountTitulaire") String bankAccountTitulaire) {
-        return iBankAccountService.retreiveAccountBalance(bankAccountTitulaire);
-    }
+
     @GetMapping("/getbankaccountbyTitulaire/{bankAccountTitulaire}")
-    public BankAccountDto getbankaccountbyTitulaire(@PathVariable String bankAccountTitulaire) {
+    public BankAccountDto getBankAccountByTitulaire(@PathVariable("bankAccountTitulaire") String bankAccountTitulaire) {
         return iBankAccountService.retrieveBankAccountByTitulaire(bankAccountTitulaire);
     }
-    @GetMapping("/findInternationalTransferByUsernameAndDate")
-    public List<InternationalTransferDto> findInternationalTransferByDateAndUserName(@RequestParam String username ,
-                                                                                     @RequestParam Integer monthF) {
-        return iBankAccountService.findInternationalTransferByDateAndUserName(username ,monthF);
+
+    @GetMapping("/getaccountbalancebyTitulaire/{bankAccountTitulaire}")
+    public Double retreiveAccountBalance(@PathVariable("bankAccountTitulaire") String bankAccountTitulaire) {
+        return iBankAccountService.retreiveAccountBalance(bankAccountTitulaire);
     }
+
+
     @GetMapping("/getfeeby/{feeId}")
     public FeeDto retrieveFee(@PathVariable Long feeId) {
         return iFeeService.retrieveFee(feeId);
 
+    }
+    @GetMapping("/generateQuestion/{topic}/{nb}")
+    public QuestionDto generateQuestion(@PathVariable("topic")String topic , @PathVariable("nb") String nb) {
+        try {
+            int numberOfQuestions = Integer.parseInt(nb);
+
+            return iBankAccountService.generateQuestion(topic, numberOfQuestions);
+        } catch (NumberFormatException e) {
+            // Handle the case where the input is not a valid integer
+            return null;
+        }
     }
 
     @GetMapping("/getinternationaltransferby/{internationalTransferId}")
@@ -89,15 +99,19 @@ public class bankAccountController
         iFeeService.modifyFee(feeDto);
     }
 
+
+
     @PutMapping("/modifyinternationaltransfer")
     public void modifyInternationalTransfer(@RequestBody InternationalTransferDto internationalTransferDto) {
         iInternationalTransferService.modifyInternationalTransfer(internationalTransferDto);
     }
-    @PutMapping("/modify/{employeeApprovalUsername}/{id}")
-    public void approveinternationaltransfer(@PathVariable String employeeApprovalUsername, Long id) {
-        iInternationalTransferService.approveinternationaltransfer(employeeApprovalUsername , id);
+
+    @PutMapping("/modify")
+    public void approveInternationalTransfer(@RequestParam String employeeApprovalUsername,
+                                             @RequestParam Long id) {
+        iInternationalTransferService.approveinternationaltransfer(employeeApprovalUsername, id);
     }
-    @PreAuthorize("hasRole('EMPLOYEE')")
+
     @DeleteMapping("/deletebankaccountby/{bankAccountId}")
     public void deletebankaccountby(@PathVariable String bankAccountId) {
         iBankAccountService.removeBankAccount(bankAccountId);
@@ -114,6 +128,13 @@ public class bankAccountController
     public void removeInternationalTransfer(@PathVariable Long internationalTransferId) {
         iInternationalTransferService.removeInternationalTransfer(internationalTransferId);
 
+    }
+
+
+    @GetMapping("/statisics")
+    public List<Float> getstatisticsForChart(@RequestParam String bankAccountId,
+                                             @RequestParam int month) {
+       return iInternationalTransferService.getstatisticsForChart(bankAccountId, month);
     }
 
 }

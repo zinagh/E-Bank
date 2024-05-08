@@ -33,6 +33,8 @@ public class BankAccount
     private List<InternationalTransfer> internationalTransfers;
     @ManyToOne
     private Fee defaultFees;
+
+
     @PrePersist
     public void prePersist() {
         if (accountNumber == null || accountNumber.isEmpty()) {
@@ -50,5 +52,3 @@ public class BankAccount
     }
 
 }
-
-
