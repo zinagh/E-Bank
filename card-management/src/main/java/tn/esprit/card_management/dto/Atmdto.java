@@ -14,8 +14,8 @@ import java.util.List;
 public class Atmdto {
     Long Id;
     String Location;
-    float Somme;
-    boolean Activated;
+    float somme;
+    boolean activated;
     String image;
 }
 

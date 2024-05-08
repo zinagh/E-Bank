@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 @Entity
 @Getter
@@ -32,4 +33,22 @@ public class BankAccount
     private List<InternationalTransfer> internationalTransfers;
     @ManyToOne
     private Fee defaultFees;
+    @PrePersist
+    public void prePersist() {
+        if (accountNumber == null || accountNumber.isEmpty()) {
+            accountNumber = generateRandomAccountNumber();
+        }
+    }
+
+    private String generateRandomAccountNumber() {
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 17; i++) {
+            sb.append(random.nextInt(10));
+        }
+        return sb.toString();
+    }
+
 }
+
+

@@ -1,5 +1,6 @@
 package com.mfbank.account_managment.controller;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.mfbank.account_managment.dto.BankAccountDto;
 import com.mfbank.account_managment.dto.FeeDto;
@@ -7,6 +8,8 @@ import com.mfbank.account_managment.dto.InternationalTransferDto;
 import com.mfbank.account_managment.service.IBankAccountService;
 import com.mfbank.account_managment.service.IFeeService;
 import com.mfbank.account_managment.service.IInternationalTransferService;
+
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -36,12 +39,19 @@ public class bankAccountController
     public BankAccountDto getbankaccountby(@PathVariable String bankAccountId) {
         return iBankAccountService.retrieveBankAccount(bankAccountId);
     }
-
+    @GetMapping("/getaccountbalancebyTitulaire/{bankAccountTitulaire}")
+    public Double getAccountBalanceByTitulaire(@PathVariable("bankAccountTitulaire") String bankAccountTitulaire) {
+        return iBankAccountService.retreiveAccountBalance(bankAccountTitulaire);
+    }
     @GetMapping("/getbankaccountbyTitulaire/{bankAccountTitulaire}")
     public BankAccountDto getbankaccountbyTitulaire(@PathVariable String bankAccountTitulaire) {
         return iBankAccountService.retrieveBankAccountByTitulaire(bankAccountTitulaire);
     }
-
+    @GetMapping("/findInternationalTransferByUsernameAndDate")
+    public List<InternationalTransferDto> findInternationalTransferByDateAndUserName(@RequestParam String username ,
+                                                                                     @RequestParam Integer monthF) {
+        return iBankAccountService.findInternationalTransferByDateAndUserName(username ,monthF);
+    }
     @GetMapping("/getfeeby/{feeId}")
     public FeeDto retrieveFee(@PathVariable Long feeId) {
         return iFeeService.retrieveFee(feeId);
@@ -87,6 +97,7 @@ public class bankAccountController
     public void approveinternationaltransfer(@PathVariable String employeeApprovalUsername, Long id) {
         iInternationalTransferService.approveinternationaltransfer(employeeApprovalUsername , id);
     }
+    @PreAuthorize("hasRole('EMPLOYEE')")
     @DeleteMapping("/deletebankaccountby/{bankAccountId}")
     public void deletebankaccountby(@PathVariable String bankAccountId) {
         iBankAccountService.removeBankAccount(bankAccountId);

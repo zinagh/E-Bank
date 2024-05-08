@@ -1,5 +1,6 @@
 package com.mfbank.account_managment.service;
 import com.mfbank.account_managment.dto.BankAccountDto;
+import com.mfbank.account_managment.dto.InternationalTransferDto;
 
 import java.util.List;
 
@@ -11,4 +12,6 @@ public interface IBankAccountService
     void removeBankAccount(String bankAccountId);
     void modifyBankAccount(BankAccountDto bankAccountDto);
     BankAccountDto retrieveBankAccountByTitulaire(String bankAccountTitulaire);
+    public Double retreiveAccountBalance(String bankAccountTitulaire);
+    public List<InternationalTransferDto> findInternationalTransferByDateAndUserName(String username ,Integer monthF) ;
 }

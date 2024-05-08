@@ -20,9 +20,10 @@ import java.util.Arrays;
 public class SecurityConfiguration {
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity serverHttpSecurity){
-            serverHttpSecurity.csrf(ServerHttpSecurity.CsrfSpec::disable)
-                    .authorizeExchange(exchange -> exchange
-                            .pathMatchers("/eureka/**")
+            serverHttpSecurity
+                    .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                    .authorizeExchange(exchange ->
+                            exchange.pathMatchers("/eureka/**", "/user/add-user")
                             .permitAll()
                             .anyExchange()
                             .authenticated())
@@ -30,24 +31,27 @@ public class SecurityConfiguration {
       return   serverHttpSecurity.build();
     }
     @Bean
-    public CorsConfigurationSource crosConfigurationSource(){
-        return exchange->{
-            ServerHttpResponse response =exchange.getResponse();
-            HttpHeaders headers =response.getHeaders();
-            headers.setAccessControlAllowOrigin("*");
-            headers.setAccessControlAllowCredentials(true);
-            headers.setAccessControlAllowHeaders(Arrays.asList("Authorization" , "Content-Type"));
-            if (exchange.getRequest().getMethod() == HttpMethod.OPTIONS){
-                headers.setAccessControlAllowMethods(Arrays.asList(
-                        HttpMethod.GET,
-                        HttpMethod.DELETE,
-                        HttpMethod.POST,
-                        HttpMethod.PUT
-                ));
-                headers.setAccessControlMaxAge(3600L);
-                return new CorsConfiguration().applyPermitDefaultValues();
-            } return null;
-        };
+    public CorsConfigurationSource corsConfigurationSource() {
+        return exchange -> {
+            ServerHttpResponse response = exchange.getResponse();
+            HttpHeaders headers = response.getHeaders();
+            String path = exchange.getRequest().getURI().getPath();
+                headers.setAccessControlAllowOrigin("*");
+                headers.setAccessControlAllowCredentials(true);
+                headers.setAccessControlAllowHeaders(Arrays.asList("Authorization", "Content-Type"));
 
+                if (exchange.getRequest().getMethod() == HttpMethod.OPTIONS) {
+                    headers.setAccessControlAllowMethods(Arrays.asList(
+                            HttpMethod.GET,
+                            HttpMethod.POST,
+                            HttpMethod.PUT,
+                            HttpMethod.DELETE
+                    ));
+                    headers.setAccessControlMaxAge(3600L);
+                    return new CorsConfiguration().applyPermitDefaultValues();
+                }
+
+            return null;
+        };
     }
 }

@@ -4,10 +4,7 @@ import com.mfbank.dto.Userdto;
 import com.mfbank.mapper.Imapper;
 import com.mfbank.mapper.Usermapper;
 import com.mfbank.model.User;
-import com.mfbank.otherDtos.BankAccountDto;
-import com.mfbank.otherDtos.CreditDto;
-import com.mfbank.otherDtos.InternationalTransferDto;
-import com.mfbank.otherDtos.RepaymentPlanDto;
+import com.mfbank.otherDtos.*;
 import com.mfbank.repository.UserRepository;
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +19,8 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -39,6 +38,7 @@ public class UserServiceImp  implements IUserService{
     Imapper imapper;
     @Autowired
     UserRepository userRepository;
+
     @Autowired
     Usermapper usermapper;
     @Autowired
@@ -84,27 +84,40 @@ public class UserServiceImp  implements IUserService{
                 .uri("http://account-management/account/getbankaccountbyTitulaire/" + userName)
                 .retrieve()
                 .bodyToMono(BankAccountDto.class)
-                .block(Duration.ofSeconds(5));
-        webClient.build()
-                .delete()
-                .uri("http://account-management/account/deletebankaccountby/" + bankAccountDto.getAccountNumber())
-                .retrieve()
-                .bodyToMono(Void.class)
-                .block(Duration.ofSeconds(5));
+                .onErrorResume(WebClientResponseException.class, ex -> {
+                    System.err.println("Failed to retrieve bank account info: " + ex.getMessage());
+                    return Mono.empty();
+                })
+                .blockOptional(Duration.ofSeconds(5))
+                .orElse(null);
+        if(bankAccountDto != null) {
+            webClient.build()
+                    .delete()
+                    .uri("http://account-management/account/deletebankaccountby/" + bankAccountDto.getAccountNumber())
+                    .retrieve()
+                    .bodyToMono(Void.class)
+                    .block(Duration.ofSeconds(5));
+        }
 
     }
     @Override
     public User modifyUser(Userdto userdto) {
-        Keycloak keycloak=keycloakSecurity.getKeycloakInstance();
-        List<UserRepresentation>  userRepresentations=keycloak
+        Keycloak keycloak = keycloakSecurity.getKeycloakInstance();
+        List<UserRepresentation> userRepresentations = keycloak
                 .realm(realm).users()
                 .search(userdto.getUserName());
-        String id=userRepresentations.get(0).getId();
-        UserRepresentation userToUpdate= imapper.mapuserRepToUpdate(userdto);
-        keycloak.realm(realm).users().get(id).update(userToUpdate);
-        User user = usermapper.userdtoTouser(userdto);
-        userRepository.save(user);
-        return user;
+
+        if (!userRepresentations.isEmpty()) {
+            String id = userRepresentations.get(0).getId();
+            UserRepresentation userToUpdate = imapper.mapuserRepToUpdate(userdto);
+            keycloak.realm(realm).users().get(id).update(userToUpdate);
+            User user = usermapper.userdtoTouser(userdto);
+            userRepository.save(user);
+            return user;
+        } else {
+            // Handle the case where no user with the given username is found
+            throw new NoSuchElementException("No user found with the given username");
+        }
     }
     @Override
     public String updatepassword(String username ,String newpass ,String verifpass){
@@ -132,45 +145,42 @@ return "password is updated";
     public  Integer getDaysToPayoffByPrincipal(RepaymentPlanDto plan) {
         Double remainingBalance = plan.getStartingBalance();
         int days = 0;
-        LocalDate currentDate = LocalDate.now(); // Get current date
+        LocalDate currentDate = LocalDate.now();
 
-        // Calculate remaining days in the current month (if starting date isn't the 1st)
         int daysInCurrentMonth = currentDate.lengthOfMonth() - currentDate.getDayOfMonth() + 1;
 
         while (remainingBalance >= 0) {
             remainingBalance -= plan.getRepaymentOfCcapital();
 
-            // Use daysInCurrentMonth for the first iteration
             int daysInMonth = daysInCurrentMonth;
-            if (daysInCurrentMonth == 0) { // After first iteration, use periodToNextMonth
+            if (daysInCurrentMonth == 0) {
                 Period periodToNextMonth = Period.between(currentDate, currentDate.withDayOfMonth(1).plusMonths(1));
                 daysInMonth = periodToNextMonth.getDays();
             }
 
             days += daysInMonth;
             currentDate = currentDate.plusDays(daysInMonth);
-            daysInCurrentMonth = 0; // Reset for subsequent iterations
+            daysInCurrentMonth = 0;
         }
 
         return days;
     }
     @Override
     public  Double getAverageDailyInterestAccrual(CreditDto credit) {
-        // Handle null CreditDto gracefully (optional)
+
         if (credit == null) {
             throw new IllegalArgumentException("CreditDto cannot be null");
         }
 
-        // Ensure RepaymentPlanDto exists (optional)
+
         RepaymentPlanDto repaymentPlan = credit.getRepaymentPlan();
         if (repaymentPlan == null) {
             throw new IllegalStateException("CreditDto must have a RepaymentPlanDto");
         }
 
-        // Calculate daily interest rate (assuming 365 days, adjust if needed)
-        Double dailyInterestRate = credit.getCreditRate() / 365.0; // Use BigDecimal for higher precision (consider)
+        Double dailyInterestRate = credit.getCreditRate() / 365.0;
 
-        // Calculate and return average daily interest accrual
+
         Double startingBalance = repaymentPlan.getStartingBalance();
         return dailyInterestRate * startingBalance;
     }
@@ -180,14 +190,14 @@ return "password is updated";
 
             Double remainingBalance = plan.getStartingBalance();
 
-            // Apply interest first in each period, then subtract repayment
+
             for (int i = 0; i < periods; i++) {
-                System.out.println("Iteration " + i + ":"); // Added for debugging
-                System.out.println("  - Interest: " + plan.getInterest()); // Added for debugging
-                System.out.println("  - Repayment: " + plan.getRepaymentOfCcapital()); // Added for debugging
-                remainingBalance += plan.getInterest(); // Apply interest first
+                System.out.println("Iteration " + i + ":");
+                System.out.println("  - Interest: " + plan.getInterest());
+                System.out.println("  - Repayment: " + plan.getRepaymentOfCcapital());
+                remainingBalance += plan.getInterest();
                 remainingBalance -= plan.getRepaymentOfCcapital();
-                System.out.println("  - Remaining Balance: " + remainingBalance); // Added for debugging
+                System.out.println("  - Remaining Balance: " + remainingBalance);
             }
 
             return remainingBalance;
@@ -205,48 +215,70 @@ return "password is updated";
 
 
     @Override
-    public  Double getAccountActivityRatio(BankAccountDto account, Date startDate, Date endDate) {
+    public Double getAccountActivityRatio(BankAccountDto account) {
+        // Get current date
+        Calendar calendar = Calendar.getInstance();
+        Date currentDate = calendar.getTime();
+
+        // Get the date one month before
+        calendar.add(Calendar.MONTH, -1);
+        Date oneMonthBeforeDate = calendar.getTime();
+
         List<InternationalTransferDto> transfers = account.getInternationalTransfers();
         int transferCount = 0;
         for (InternationalTransferDto transfer : transfers) {
-            if (transfer.getDate().equals(startDate) || transfer.getDate().equals(endDate) ||
-                    transfer.getDate().compareTo(startDate) > 0 && transfer.getDate().compareTo(endDate) < 0) {
+            if (transfer.getDate().equals(currentDate) || transfer.getDate().equals(oneMonthBeforeDate) ||
+                    (transfer.getDate().compareTo(oneMonthBeforeDate) > 0 && transfer.getDate().compareTo(currentDate) <= 0)) {
                 transferCount++;
-            System.out.println("Transfer date within period: " + transfer.getDate()); // Add print statement
+                System.out.println("Transfer date within period: " + transfer.getDate()); // Add print statement
             }
         }
 
-
         // Calculate days in the period (ensure non-negative value)
-        double days = Math.max((endDate.getTime() - startDate.getTime()) / (1000.0 * 60 * 60 * 24), 1.0);
+        double days = Math.max((currentDate.getTime() - oneMonthBeforeDate.getTime()) / (1000.0 * 60 * 60 * 24), 1.0);
 
         return (double) transferCount / days;
     }
 
 
     @Override
-    public  Double getFeeIncomePerAccount() {
-        BankAccountDto account = webClient.build()
-                .get()
-                .uri("http://account-management/account/getbankaccountbyTitulaire/" + getUsername())
-                .retrieve()
-                .bodyToMono(BankAccountDto.class)
-                .block(Duration.ofSeconds(5));
-        Double totalFees = 0.0;
-        Double feePercentage = 0.0;
-        Double totalSentTransactions = 0.0;
-        feePercentage = account.getInternationalTransfers().get(0).getInternationnalFees().getAmountPercent();
-        for (InternationalTransferDto transfer : account.getInternationalTransfers()) {
-            if (transfer.getInternationnalFees() != null && transfer.isSendOrReceive() == true) {
-                totalSentTransactions += transfer.getAmount();
+    public  Map<Double,List<Double>>  getFeeIncomePerAccount(String username) {
+        List<Double> monthlyTranfersFees = new ArrayList<>();
+        double totalAmountofAllMonths = 0;
+        for (int monthF = 1; monthF <= 12; monthF++) {
+            List<InternationalTransferDto> internationalTransferDtoList = webClient.build()
+                    .get().uri("http://account-management/account/findInternationalTransferByUsernameAndDate?username=" + username + "&monthF=" + monthF)
+                    .retrieve()
+                    .bodyToFlux(InternationalTransferDto.class)
+                    .collectList()
+                    .block(Duration.ofSeconds(5));
+            int totalTransfers = internationalTransferDtoList.size();
+            System.out.println("Month is : " + monthF + "Size is :" + totalTransfers);
+            if (totalTransfers == 0) {
+               monthlyTranfersFees.add(0.0);
+            } else {
+                double totalAmountOneMonth = 0;
+                for (InternationalTransferDto inter : internationalTransferDtoList){
+                    double feeDtoAmount = inter.getInternationnalFees().getAmountPercent() * inter.getAmount();
+                    totalAmountOneMonth = totalAmountOneMonth + feeDtoAmount;
+                }
+                totalAmountofAllMonths = totalAmountofAllMonths + totalAmountOneMonth;
+                monthlyTranfersFees.add(totalAmountOneMonth);
             }
+
         }
-        totalFees = (totalSentTransactions * feePercentage) / 100;
-        return totalFees;
+        List<Double> feePercentage = new ArrayList<>();
+        for (Double db :monthlyTranfersFees ){
+            double monthfees = (db * 100) / totalAmountofAllMonths;
+            feePercentage.add(monthfees);
+        }
+        Map<Double, List<Double>> maptoReturn = new HashMap<>();
+        maptoReturn.put(totalAmountofAllMonths, feePercentage);
+        return  maptoReturn;
     }
 
     @Override
-    public  String getAccountUtilizationRatio() {
+    public  Double getAccountUtilizationRatio() {
         BankAccountDto account = webClient.build()
                 .get()
                 .uri("http://account-management/account/getbankaccountbyTitulaire/" + getUsername())
@@ -256,42 +288,46 @@ return "password is updated";
 
         Double result =0.0;
         if (!account.getNegativeSoldeAllowed()) {
-            return "0%";
+            return 0.0;
         }
 
         Double availableBalance = account.getAccount_balance() - account.getNegativeSoldeAmount();
         result = Math.round(account.getAccount_balance() / availableBalance * 100.0) / 100.0;
-        return (result * 100) + "%";
+        return (result * 100);
     }
-    @Override
-    public  String getPercentageOutgoingTransfers() {
-        BankAccountDto account = webClient.build()
-                .get()
-                .uri("http://account-management/account/getbankaccountbyTitulaire/" + getUsername())
-                .retrieve()
-                .bodyToMono(BankAccountDto.class)
-                .block(Duration.ofSeconds(5));
-        assert account != null;
-        int totalTransfers = account.getInternationalTransfers().size();
-        if (totalTransfers == 0) {
-            return "0.0%";
-        } else {
-            int outgoingTransfers = 0;
-            for (InternationalTransferDto transfer : account.getInternationalTransfers()) {
-                if (transfer.isSendOrReceive() == false) {
-                    outgoingTransfers++;
+    public List<Double> getMonthlyOutgoingTransfers(String username) {
+        List<Double> monthlyTranfers = new ArrayList<>();
+
+        for (int monthF = 1; monthF <= 12; monthF++) {
+            List<InternationalTransferDto> internationalTransferDtoList = webClient.build()
+                    .get().uri("http://account-management/account/findInternationalTransferByUsernameAndDate?username=" + username + "&monthF=" + monthF)
+                    .retrieve()
+                    .bodyToFlux(InternationalTransferDto.class)
+                    .collectList()
+                    .block(Duration.ofSeconds(5));
+            int totalTransfers = internationalTransferDtoList.size();
+            System.out.println("Month is : " + monthF + "Size is :" + totalTransfers);
+            if (totalTransfers == 0) {
+                monthlyTranfers.add(0.0);
+            } else {
+                int outgoingTransfers = 0;
+                for (InternationalTransferDto transfer : internationalTransferDtoList) {
+                    if (transfer.isSendOrReceive() == false) {
+                        outgoingTransfers++;
+                    }
                 }
+
+                System.out.print("outgoingTransfers " + outgoingTransfers);
+                System.out.print("totalTransfers " + totalTransfers);
+
+                Double result = Math.round((double)  outgoingTransfers / totalTransfers * 100.0) / 100.0;
+                System.out.print("result " + result);
+                monthlyTranfers.add(result * 100);
             }
-
-            System.out.print("outgoingTransfers " + outgoingTransfers);
-            System.out.print("totalTransfers " + totalTransfers);
-
-            Double result = Math.round((double) outgoingTransfers / totalTransfers * 100.0) / 100.0;
-            System.out.print("result " + result);
-
-
-            return (result * 100) + "%";
         }
+
+        return monthlyTranfers;
+
     }
 
 

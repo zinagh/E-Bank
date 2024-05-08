@@ -1,7 +1,12 @@
 package com.mfbank.account_managment.service;
+import com.mfbank.account_managment.dto.InternationalTransferDto;
 import com.mfbank.account_managment.dtouser.Userdto;
+import com.mfbank.account_managment.mapper.InternationalTransferMapper;
+import com.mfbank.account_managment.model.InternationalTransfer;
 import com.mfbank.account_managment.repository.BankAccountRepository;
 import com.mfbank.account_managment.repository.FeeRepository;
+import com.mfbank.account_managment.repository.InternationalTransferRepository;
+import com.netflix.discovery.converters.Auto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,8 +23,8 @@ import com.mfbank.account_managment.model.FeeType;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.Duration;
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDate;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +34,9 @@ public class BankAccountServiceImpl implements  IBankAccountService{
     private final IBankAccountMapper iBankAccountMapper;
     private final WebClient.Builder webClient;
     private SecurityContextHolder securityContextHolder;
-
+InternationalTransferRepository internationalTransferRepository;
+@Autowired
+InternationalTransferMapper internationalTransferMapper;
     @Value("${principle-attribute}")
     private String principleAttribut;
 
@@ -131,5 +138,33 @@ public class BankAccountServiceImpl implements  IBankAccountService{
         }
         throw new IllegalStateException("Could not retrieve token from SecurityContext");
     }
+    @Override
+    public List<InternationalTransferDto> findInternationalTransferByDateAndUserName(String username ,Integer monthF) {
+       BankAccount bankAccount = bankAccountRepository.findByTitulaire(username).get();
+        List<InternationalTransfer> internationalTransfers = bankAccount.getInternationalTransfers();
+        List<InternationalTransfer> internationalTransfersByMonth =new ArrayList<>();
+        for (InternationalTransfer transfer : internationalTransfers) {
+            int month = transfer.getDate().getMonth() + 1;
+            System.out.println(month);
+            if (month == monthF) {
+                internationalTransfersByMonth.add(transfer);
+            }
+        }
+        List<InternationalTransferDto> internationalTransferDtos = new ArrayList<>();
+        internationalTransferDtos = internationalTransferMapper.toDtoList(internationalTransfersByMonth);
+        return internationalTransferDtos;
+    }
 
+    @Override
+    public Double retreiveAccountBalance(String bankAccountTitulaire){
+        Optional<BankAccount> opBankAccount =  bankAccountRepository.findByTitulaire(bankAccountTitulaire);
+
+        if (opBankAccount.isPresent()){
+            BankAccount bankAccount = opBankAccount.get();
+            Double  balance =bankAccount.getAccount_balance();
+            return balance;
+        } else {
+            return 0.0;
+        }
+    }
 }

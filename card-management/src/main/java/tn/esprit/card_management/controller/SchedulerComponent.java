@@ -17,8 +17,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SchedulerComponent  {
     private final CardRepository cardRepository;
-    //@Scheduled(cron = "0 * * * * *") testing each minute
-    @Scheduled(cron = "0 0 0 1 * *")
+    @Scheduled(cron = "*/1 * * * * *") //testing each minute
+    //@Scheduled(cron = "0 0 0 1 */1 *")
     public void resetPlafond() {
         List<Card> cards = cardRepository.findAll();
         for (Card card : cards) {

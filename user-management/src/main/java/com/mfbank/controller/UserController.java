@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class UserController {
@@ -55,7 +56,7 @@ public class UserController {
 
 
     @GetMapping("/retrieve-all-users")
-    @PreAuthorize("hasRole('EMPLOYEE')")
+   // @PreAuthorize("hasRole('EMPLOYEE')")
     public List<Userdto> retrieveAllUsers() {
         List<Userdto> listUserdtos = userService.retrieveAllUsers();
         return listUserdtos;
@@ -67,7 +68,7 @@ public class UserController {
         return userdto;
     }
 
-
+   // @PreAuthorize("hasRole('EMPLOYEE')")
     @DeleteMapping("/remove-user/{userName}")
     public void removeUser(@PathVariable("userName") String userName) {
         userService.removeUser(userName);
@@ -105,29 +106,28 @@ public class UserController {
 
 
     @GetMapping("/getAccountActivityRatio")
-    public  Double getAccountActivityRatio(@RequestBody BankAccountDto account ,@RequestParam Date startDate, @RequestParam Date endDate){
-        return userService.getAccountActivityRatio(account ,startDate , endDate);
+    public  Double getAccountActivityRatio(@RequestBody BankAccountDto account ){
+        return userService.getAccountActivityRatio(account );
     }
 
 
-
+  //  @PreAuthorize("hasRole('EMPLOYEE' , 'STUDENT')")
     @GetMapping("/getFeeIncomePerAccount")
-    public Double getFeeIncomePerAccount() {
-        return userService.getFeeIncomePerAccount();
+    public Map<Double,List<Double>>  getFeeIncomePerAccount(@RequestParam String username) {
+        return userService.getFeeIncomePerAccount(username);
 
     }
 
-
+  //  @PreAuthorize("hasRole('EMPLOYEE' , 'STUDENT')")
     @GetMapping("/getAccountUtilizationRatio")
-    public String
-    getAccountUtilizationRatio() {
+    public Double getAccountUtilizationRatio() {
         return userService.getAccountUtilizationRatio();
 
     }
-
+   // @PreAuthorize("hasRole('EMPLOYEE' , 'STUDENT')")
     @GetMapping("/getPercentageOutgoingTransfers")
-    public String getPercentageOutgoingTransfers() {
-        return userService.getPercentageOutgoingTransfers();
+    public List<Double> getPercentageOutgoingTransfers(@RequestParam String username) {
+        return userService.getMonthlyOutgoingTransfers(username);
 
     }
 

@@ -34,7 +34,7 @@ public class TransactionController {
             System.out.println(email);
             emailService.sendEmail(email, "transaction" , "Transaction passed sucessfuly with reference: " + transaction.getReference() + " You sent " +
                     transaction.getMontant() + " TND to the bank Account : " + transaction.getDestination());
-
+            smsService.sendSms("+21655891733", "Invoice passed successfully");
             return ResponseEntity.status(HttpStatus.CREATED).body("Transaction created successfully");
 
         } catch (Exception e) {

@@ -24,15 +24,6 @@ public class FeeController {
     @PostMapping("/add-Fee")
     public Fee addFee(@RequestBody Feedto a) {
         Fee fee = iFeeService.addFee(a);
-        if(fee.getType().equals(FeeType.FeeForCLASSIC)){
-            fee.setAmount(0.1);
-        }
-        if(fee.getType().equals(FeeType.FeeForGOLD)){
-            fee.setAmount(0.25);
-        }
-        if(fee.getType().equals(FeeType.FeeForPREMIUM)){
-            fee.setAmount(0.35);
-        }
         return fee;
     }
     @DeleteMapping("/remove-Fee/{id}")

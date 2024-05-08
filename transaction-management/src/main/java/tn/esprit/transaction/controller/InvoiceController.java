@@ -35,8 +35,6 @@ public class InvoiceController {
         public ResponseEntity<String> createInvoice(@RequestBody InvoiceDto invoiceDto) {
             try {
                 invoiceService.addInvoice(invoiceDto);
-             //   log.info("processSms Started sendRequest: "+ sendRequest.toString() );
-                 smsService.sendSms("+21655891733", "invoice avec succes");
                 return ResponseEntity.ok("Invoice created successfully");
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while creating the invoice");

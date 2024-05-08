@@ -1,5 +1,7 @@
 package com.mfbank.account_managment.service;
 import com.mfbank.account_managment.dto.InternationalTransferDto;
+
+import java.util.Date;
 import java.util.List;
 
 public interface IInternationalTransferService
@@ -10,4 +12,5 @@ public interface IInternationalTransferService
     public void removeInternationalTransfer(Long internationalTransferId);
     public void modifyInternationalTransfer(InternationalTransferDto internationalTransferDto);
     public void approveinternationaltransfer(String employeeApprovalUsername, Long id);
+
 }

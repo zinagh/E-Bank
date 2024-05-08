@@ -66,10 +66,16 @@ public class AtmService implements IAtmService {
     }
     @Override
     public boolean validerRetrait(String numeroCard, String codeSecurite, float montant, Atmdto atmdto) {
-        if (!atmdto.isActivated() || montant <= 0 || montant > atmdto.getSomme()) {
+        if (atmdto.isActivated() == false || montant <= 0 || montant > atmdto.getSomme()) {
+            System.out.println(montant);
+            System.out.println(atmdto.getSomme());
+            System.out.println(atmdto.isActivated());
+
             return false;
         }
         Optional<Card> optionalCard = cardRepository.findById(numeroCard);
+        System.out.println(optionalCard);
+
         return optionalCard.map(card -> card.getCodeSecurite().equals(codeSecurite)).orElse(false);
     }
 
@@ -94,7 +100,8 @@ public class AtmService implements IAtmService {
         }
         webClient.build()
                 .put()
-                .uri("http://account-management/account/modifybankaccount", bankAccountDto)
+                .uri("http://account-management/account/modifybankaccount" )
+                .bodyValue(bankAccountDto)
                 .retrieve()
                 .bodyToMono(void.class)
                 .block(Duration.ofSeconds(5));

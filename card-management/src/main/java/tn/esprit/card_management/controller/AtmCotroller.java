@@ -60,7 +60,7 @@ public class AtmCotroller {
             @RequestParam String numeroCard,
             @RequestParam String codeSecurite
     ) {
-        Atmdto atmdto =iAtmService.retrieveAtm(id);
+        Atmdto atmdto = iAtmService.retrieveAtm(id);
         // Valider le retrait
         if (!iAtmService.validerRetrait(numeroCard,codeSecurite, montant, atmdto)) {
             return "erreur-retrait";

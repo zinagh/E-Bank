@@ -9,6 +9,7 @@ import com.mfbank.otherDtos.RepaymentPlanDto;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface IUserService {
     List<Userdto> retrieveAllUsers();
@@ -26,9 +27,9 @@ public interface IUserService {
     Double getCoverageRatioByPlannedRepayments(RepaymentPlanDto plan);
 
 
-    Double getAccountActivityRatio(BankAccountDto account, Date startDate, Date endDate);
-    Double getFeeIncomePerAccount();
-    String getAccountUtilizationRatio();
-    String getPercentageOutgoingTransfers();
+    Double getAccountActivityRatio(BankAccountDto account);
+    Map<Double,List<Double>> getFeeIncomePerAccount(String username);
+    Double getAccountUtilizationRatio();
+    List<Double> getMonthlyOutgoingTransfers(String username);
 
 }

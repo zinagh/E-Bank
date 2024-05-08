@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import tn.esprit.card_management.dto.Feedto;
 import tn.esprit.card_management.mapper.IFeemapper;
 import tn.esprit.card_management.model.Fee;
+import tn.esprit.card_management.model.FeeType;
 import tn.esprit.card_management.repository.FeeRepository;
 
 import java.util.List;
@@ -24,6 +25,15 @@ public class FeeService implements IFeeService{
     @Override
     public Fee addFee(Feedto feedto) {
         Fee fee = iFeemapper.dtoToEntity(feedto);
+        if(fee.getType().equals(FeeType.FeeForCLASSIC)){
+            fee.setAmount(0.1);
+        }
+        if(fee.getType().equals(FeeType.FeeForGOLD)){
+            fee.setAmount(0.25);
+        }
+        if(fee.getType().equals(FeeType.FeeForPREMIUM)){
+            fee.setAmount(0.35);
+        }
         feeRepository.save(fee);
         return fee;
     }

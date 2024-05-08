@@ -22,6 +22,7 @@ public class InvoiceService implements IInvoiceService {
     private final IInvoiceMapper iInvoiceMapper;
     private final InvoiceRepository invoiceRepository;
     private final ITransactionMapper iTransactionMapper;
+    SmsService smsService;
 
     @Override
     public void addInvoice(InvoiceDto invoiceDto){
@@ -29,6 +30,7 @@ public class InvoiceService implements IInvoiceService {
         Transaction transaction = iTransactionMapper.fromDtoToentity(invoiceDto.getTransactionDto());
         invoice.setTransaction(transaction);
         invoiceRepository.save(invoice);
+        smsService.sendSms("+21655891733", "Invoice passed successfully");
     }
 
     @Override

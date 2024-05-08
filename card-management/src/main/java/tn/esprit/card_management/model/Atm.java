@@ -22,8 +22,8 @@ public class Atm {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long Id;
     String Location;
-    float Somme;
-    boolean Activeted;
+    float somme;
+    boolean activated;
     String image;
     @ManyToMany(mappedBy = "atms")
     List<Card> cardes ;
