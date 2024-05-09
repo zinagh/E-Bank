@@ -15,4 +15,7 @@ public interface InternationalTransferRepository extends JpaRepository<Internati
     @Query("SELECT it FROM InternationalTransfer it WHERE it.bankAccountToMakeTransfert = :bankAccount AND MONTH(it.date) = :month")
     List<InternationalTransfer> findByBankAccountAndMonth(@Param("bankAccount") BankAccount bankAccount, @Param("month") int month);
 
+
+    List<InternationalTransfer> findByBankAccountToMakeTransfert(BankAccount bankAccountToMakeTransfert);
+
 }

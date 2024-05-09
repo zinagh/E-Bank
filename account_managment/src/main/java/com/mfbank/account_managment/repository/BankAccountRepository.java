@@ -14,4 +14,6 @@ public interface BankAccountRepository extends JpaRepository<BankAccount , Strin
     Optional<BankAccount> findByInternationalTransferId(Long internationalTransferId);
 
     Optional<BankAccount> findByTitulaire(String titulaire);
+    Optional<BankAccount> findByAccountNumber(String accountNumber);
+
 }

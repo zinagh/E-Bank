@@ -13,4 +13,5 @@ public interface IInternationalTransferService
     void modifyInternationalTransfer(InternationalTransferDto internationalTransferDto);
     void approveinternationaltransfer(String employeeApprovalUsername, Long id);
     List<Float> getstatisticsForChart (String bankAccountId, int month);
+    List<InternationalTransferDto> retrieveAllInternationalTransfersByTitulaireAccount(String username);
 }

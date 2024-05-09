@@ -1,8 +1,12 @@
 package com.mfbank.account_managment.service;
 import com.mfbank.account_managment.dto.BankAccountDto;
+import com.mfbank.account_managment.dto.InternationalTransferDto;
 import com.mfbank.account_managment.dto.QuestionDto;
+import com.mfbank.account_managment.model.BankAccount;
+import com.mfbank.account_managment.model.InternationalTransfer;
 import lombok.SneakyThrows;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface IBankAccountService
@@ -21,4 +25,7 @@ public interface IBankAccountService
 
     @SneakyThrows
     QuestionDto generateQuestion(String topic, int numberOfQuestions);
+
+     List<InternationalTransferDto> findInternationalTransferByDateAndUserName(String username , Integer monthF);
+
 }

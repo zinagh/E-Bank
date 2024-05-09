@@ -49,7 +49,9 @@ public class InternationalTransferServiceImpl implements IInternationalTransferS
     public void addInternationalTransfer(InternationalTransferDto internationalTransferDto)    {
         InternationalTransfer internationalTransfer = iInternationalTransferMapper.toEntity(internationalTransferDto);
         String bankAccountId = internationalTransferDto.getBankAccountToMakeTransfert();
-        Optional<BankAccount> bankAccount = bankAccountRepository.findById(bankAccountId);
+        System.out.println("bankAccountId is :" + bankAccountId);
+        Optional<BankAccount> bankAccount = bankAccountRepository.findByAccountNumber(bankAccountId);
+        System.out.println("bankAccount: " + bankAccount);
         if(bankAccount.isPresent()){
             BankAccount bankAccountToadd = bankAccount.get();
             internationalTransfer.setBankAccountToMakeTransfert(bankAccountToadd);
@@ -72,6 +74,7 @@ public class InternationalTransferServiceImpl implements IInternationalTransferS
            InternationalTransfer internationalTransfer = optionalInternationalTransfer.get();
            internationalTransfer.setEmployeeApprovalUsername(employeeApprovalUsername);
            internationalTransfer.setApproval(true);
+           internationalTransfer.setStatus("Approved");
            internationalTransferRepository.save(internationalTransfer);
            Optional<BankAccount> optionalBankAccount = bankAccountRepository.findByInternationalTransferId(internationalTransfer.getId());
            if(optionalBankAccount.isPresent()) {
@@ -149,4 +152,18 @@ public class InternationalTransferServiceImpl implements IInternationalTransferS
 
         return fee;
     }
+
+
+    @Override
+    public List<InternationalTransferDto> retrieveAllInternationalTransfersByTitulaireAccount(String username) {
+        Optional<BankAccount> opBankAccount = bankAccountRepository.findByTitulaire(username);
+        if(opBankAccount.isEmpty()){
+            return null;
+        }
+        BankAccount bankAccount = opBankAccount.get();
+        List<InternationalTransfer> internationalTransfers = internationalTransferRepository.findByBankAccountToMakeTransfert(bankAccount);
+        List<InternationalTransferDto> internationalTransferDtos = iInternationalTransferMapper.toDtoList(internationalTransfers);
+        return internationalTransferDtos;
+    }
+
 }

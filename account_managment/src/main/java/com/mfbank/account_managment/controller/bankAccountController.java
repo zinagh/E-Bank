@@ -137,4 +137,18 @@ public class bankAccountController
        return iInternationalTransferService.getstatisticsForChart(bankAccountId, month);
     }
 
+    @GetMapping("/findInternationalTransferByUsernameAndDate")
+    public List<InternationalTransferDto> findInternationalTransferByDateAndUserName(@RequestParam String username ,
+                                                                                     @RequestParam Integer monthF) {
+        return iBankAccountService.findInternationalTransferByDateAndUserName(username ,monthF);
+    }
+
+
+
+    @GetMapping("/retrieveAllInternationalTransfersByTitulaireAccount/{titulaire}")
+    public List<InternationalTransferDto> retrieveAllInternationalTransfersByTitulaireAccount(@PathVariable String titulaire) {
+        return iInternationalTransferService.retrieveAllInternationalTransfersByTitulaireAccount(titulaire);
+    }
+
+
 }

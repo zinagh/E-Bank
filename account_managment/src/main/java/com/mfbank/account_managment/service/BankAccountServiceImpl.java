@@ -1,8 +1,10 @@
 package com.mfbank.account_managment.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mfbank.account_managment.dto.InternationalTransferDto;
 import com.mfbank.account_managment.dto.QuestionDto;
 import com.mfbank.account_managment.dtouser.Userdto;
+import com.mfbank.account_managment.mapper.IInternationalTransferMapper;
 import com.mfbank.account_managment.mapper.QuestionMapper;
 import com.mfbank.account_managment.model.*;
 import com.mfbank.account_managment.repository.BankAccountRepository;
@@ -28,6 +30,7 @@ import org.springframework.http.*;
 
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -43,8 +46,10 @@ public class BankAccountServiceImpl implements  IBankAccountService{
     private final WebClient.Builder webClient;
     private SecurityContextHolder securityContextHolder;
 
+    private final IInternationalTransferMapper internationalTransferMapper;
     @Value("${principle-attribute}")
     private String principleAttribut;
+    @Value("${com.github.reactiveclown.openai.apiKey}")
     private String openaiApiKey;
     @Autowired
     private final QuestionDao  questionDao;
@@ -188,17 +193,12 @@ public class BankAccountServiceImpl implements  IBankAccountService{
     @SneakyThrows
     @Override
     public QuestionDto generateQuestion(String topic, int numberOfQuestions) {
-
         String chatGptUrl = "http://localhost:3040/v1/chat/completions";
         HttpHeaders headers = new HttpHeaders();
-
+        System.out.println("openaiApiKey : " + openaiApiKey);
         headers.set("Authorization", "Bearer "+ openaiApiKey);
         headers.setContentType(MediaType.APPLICATION_JSON);
-
         String prompt = "Generate a quiz question with one correct answer and three incorrect answers about.";
-
-
-
         String requestBody = "{" +
                 "\"model\": \"gpt-3.5-turbo\"," +
                 "\"max_tokens\": \"150\"," +
@@ -208,24 +208,15 @@ public class BankAccountServiceImpl implements  IBankAccountService{
                 "]" +
                 "}" ;
         HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
-
-
-
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(chatGptUrl, requestEntity, String.class);
-
-
-
         String responseBody = responseEntity.getBody();
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode responseJson = null;
         System.out.println(responseBody);
-
         responseJson = objectMapper.readTree(responseBody);
-
         System.out.println(responseJson);
         String generatedText = responseJson.get("choices").get(0).get("message").get("content").asText();
         System.out.println(generatedText);
-
 
 // Parse the generatedText to extract the question and answers
 // For example, assuming the format is "Question? Answer1. Answer2. Answer3. CorrectAnswer."
@@ -235,8 +226,8 @@ public class BankAccountServiceImpl implements  IBankAccountService{
         JsonNode jsonObject = objectMapper.readTree(generatedText);
 
         // Extracting question
-        String question = jsonObject.get("question").asText();
 
+        String question = jsonObject.get("question").asText();
         // Extracting responses
         String response1 = jsonObject.get("response1").asText();
         String response2 = jsonObject.get("response2").asText();
@@ -276,6 +267,24 @@ public class BankAccountServiceImpl implements  IBankAccountService{
             return (String) jwt.getClaim(principleAttribut);
         }
         throw new IllegalStateException("Could not retrieve token from SecurityContext");
+    }
+
+
+    @Override
+    public List<InternationalTransferDto> findInternationalTransferByDateAndUserName(String username , Integer monthF) {
+        BankAccount bankAccount = bankAccountRepository.findByTitulaire(username).get();
+        List<InternationalTransfer> internationalTransfers = bankAccount.getInternationalTransfers();
+        List<InternationalTransfer> internationalTransfersByMonth =new ArrayList<>();
+        for (InternationalTransfer transfer : internationalTransfers) {
+            int month = transfer.getDate().getMonth() + 1;
+            System.out.println(month);
+            if (month == monthF) {
+                internationalTransfersByMonth.add(transfer);
+            }
+        }
+        List<InternationalTransferDto> internationalTransferDtos = new ArrayList<>();
+        internationalTransferDtos = internationalTransferMapper.toDtoList(internationalTransfersByMonth);
+        return internationalTransferDtos;
     }
 
 }
